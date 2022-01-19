@@ -29,8 +29,10 @@
       type="javax.sql.DataSource" 
       maxTotal="100" maxIdle="30" 
       maxWaitMillis="10000" driverClassName="org.postgresql.Driver" 
-      url="jdbc:postgresql://127.0.0.1:5432/" 
+      url="jdbc:postgresql://127.0.0.1:5432/timescheduler" 
       username="thang" password="060901ttvt" />
+  <environment name="secretKey" value="xUPU+11yuLSG1dpiAK69dDXcKiV+fj+3tS7oflPom39SDAa68olAVzrDkgh4IKsZ"/>
+    <!-- resource vs environment??, need to read up  -->
   <!-- Uncomment this to disable session persistence across Tomcat restarts -->
   <!--
     <Manager pathname="" />

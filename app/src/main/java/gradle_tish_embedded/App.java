@@ -14,35 +14,24 @@ import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.descriptor.web.ContextResource;
 
-import servlet.HelloServlet;
-import servlet.UserListServlet;
-
+import Utilities.JwtHelper;
+import io.jsonwebtoken.io.Encoders;
 
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 public class App {
-    private static File getRootFolder() {
-        try {
-            File root;
-            String runningJarPath = App.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replaceAll("\\\\", "/");
-            int lastIndexOf = runningJarPath.lastIndexOf("/target/");
-            if (lastIndexOf < 0) {
-                root = new File("");
-            } else {
-                root = new File(runningJarPath.substring(0, lastIndexOf));
-            }
-            System.out.println("application resolved root folder: " + root.getAbsolutePath());
-            return root;
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
+
     public static void main(String[] args) throws Exception {
         easyMain(args);
     }
@@ -61,84 +50,19 @@ public class App {
         // set config file for ctx must be done first be4 being registered to the virtual host
         // the minor difference between addWebapp and addContext is addWebApp also 
         // include a context.xml and web.xml while addContext doesnt
-        Context ctx = tomcat.addWebapp("", new File(".").getAbsolutePath());
-        Tomcat.addServlet(ctx, "hello", new HelloServlet());
-        Tomcat.addServlet(ctx, "userList", new UserListServlet());
-        ctx.addServletMappingDecoded("/*", "hello");
-        ctx.addServletMappingDecoded("/list", "userList");
+        Context ctx = tomcat.addWebapp("", new File("./src/main/resources").getAbsolutePath());
+        // Tomcat.addServlet(ctx, "hello", new HelloServlet());
+        // Tomcat.addServlet(ctx, "userList", new UserListServlet());
+        // ctx.addServletMappingDecoded("/*", "hello");
+        // ctx.addServletMappingDecoded("/list", "userList");
 
         // A problem when connecting to postgres is that you need to have an 
         // org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory 
-
-        // Context ctx2 = new StandardContext();
-        // ctx2.setName("");
-        // ctx2.setPath("");
-        // ctx2.setDocBase(new File(".").getAbsolutePath());
-        // File file = new File("src/main/resources", "context.xml");
-        // System.out.println(file.exists());
-        // ContextResource resource = new ContextResource();
-        // resource.setName("jdbc/UserDB");
-        // resource.setAuth("Container");
-        // resource.setType(DataSource.class.getName());
-        // resource.setProperty("driverClassName", "org.postgresql.Driver");
-        // resource.setProperty("url", "jdbc:postgresql://127.0.0.1:5432/");
-        // resource.setProperty("username","thang");
-        // resource.setProperty("password","060901ttvt");
-        // ctx.getNamingResources().addResource(resource);
-        // System.out.println(ctx.getNamingResources());
-
-        tomcat.start();
-        tomcat.getServer().await();
-    }
-    public static void complicatedMain(String[] args) throws Exception {
-        File root = getRootFolder();
-        System.out.println(root.getAbsolutePath());
-        System.setProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE", "true");
-        Tomcat tomcat = new Tomcat();
-        Path tempPath = Files.createTempDirectory("tomcat-base-dir");
-        System.out.println(tempPath.toAbsolutePath());
+        // List<String> lmao = new ArrayList<String>(); 
+        System.out.println(Encoders.BASE64.encode(JwtHelper.key.getEncoded()));
         
-
-        tomcat.setBaseDir(tempPath.toString());
-        tomcat.setHostname("localhost");
-        //The port that we should run on can be set into an environment variable
-        //Look for that variable and default to 8080 if it isn't there.
-        String webPort = System.getenv("PORT");
-        if (webPort == null || webPort.isEmpty()) {
-            webPort = "8080";
-        }
-        System.out.println("OK");
-        tomcat.setPort(Integer.valueOf(webPort));
-        tomcat.getConnector();
-
-
-        File webContentFolder = new File(root.getAbsolutePath(), "src/main/webapp/");
-        if (!webContentFolder.exists()) {
-            webContentFolder = Files.createTempDirectory("default-doc-base").toFile();
-        }
-
-        StandardContext ctx = (StandardContext) tomcat.addWebapp("", webContentFolder.getAbsolutePath());
-        //Set execution independent of current thread context classloader (compatibility with exec:java mojo)
-        ctx.setParentClassLoader(App.class.getClassLoader());
-
-        System.out.println("configuring app with basedir: " + webContentFolder.getAbsolutePath());
-
-        // Declare an alternative location for your "WEB-INF/classes" dir
-        // Servlet 3.0 annotation will work
-        File additionWebInfClassesFolder = new File(root.getAbsolutePath(), "target/classes");
-        WebResourceRoot resources = new StandardRoot(ctx);
-
-        WebResourceSet resourceSet;
-        if (additionWebInfClassesFolder.exists()) {
-            resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionWebInfClassesFolder.getAbsolutePath(), "/");
-            System.out.println("loading WEB-INF resources from as '" + additionWebInfClassesFolder.getAbsolutePath() + "'");
-        } else {
-            resourceSet = new EmptyResourceSet(resources);
-        }
-        resources.addPreResources(resourceSet);
-        ctx.setResources(resources);
-
         tomcat.start();
         tomcat.getServer().await();
     }
+ 
 }

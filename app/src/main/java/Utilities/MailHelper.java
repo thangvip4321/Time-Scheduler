@@ -1,32 +1,35 @@
-package usecases;
+package Utilities;
 
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import entities.Event;
+import entities.User;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-
+import com.sun.mail.util.MailLogger;
 
 public class MailHelper {
     // which is the email that i put this app password?
     static String sender= "ducthangnguyen0609@gmail.com";
 	static String password = "onqbmgrvefxeliok";
-	static String hostname="192.168.0.102:8080";
+	static String hostname="localhost:8080";
+	static Properties props = new Properties();
 
-    private static void sendMail(String content,String[] recipients) {
-
-		// create some properties and get the default Session
-		Properties props = new Properties();
+	// this may not work
+	static {
 		props.put("mail.smtp.host", "smtp.gmail.com");
 		props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.port", 587);
 		props.put("mail.smtp.auth", true);
+	}
 
+    public static void sendMail(String content,String[] recipients) {
 
+		// create some properties and get the default Session
 		Session session = Session.getInstance(props, new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -34,13 +37,27 @@ public class MailHelper {
 				return new PasswordAuthentication(sender, password);
 			}
 		});
-		
+
+		try {
+			Class.forName("java.lang.Object");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+
+		// could not cast from Object to InternetAddress, be fucking cause the Object type is loaded by the 'bootstrap' classloader
+		// and the Internet address type is loaded by application classloader. But still why cant they be casted?
+		// Class.forname("java.lang.Object") would solve the problem, but it seems ugly, no choices left tho
+		String addresses =  Arrays.stream(recipients).reduce("",(str,nextRecipient) -> str.concat(",").concat(nextRecipient));
+
+
+
 		try {
 			// create a message
 			MimeMessage msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(sender));
-			
-			InternetAddress[] addresses =  (InternetAddress[]) Arrays.stream(recipients).map(InternetAddress::new).toArray();
 			msg.setRecipients(Message.RecipientType.TO, addresses);
 			msg.setSubject("Jakarta Mail APIs Test");
 			msg.setSentDate(new Date());
@@ -75,9 +92,6 @@ public class MailHelper {
 					System.out.println("         "+validSent[i]);
 				}
 			}
-			if(ex instanceof AddressException){
-				// do nothing
-			}
 			System.out.println();
 			if (ex instanceof MessagingException)
 				ex = ((MessagingException)ex).getNextException();
@@ -87,18 +101,23 @@ public class MailHelper {
 		}
 	}
 	public static void sendVerificationMail(String token,String email) {
-		String address = "/verify";
-		String redirectLink = hostname.concat(address).concat("?token=").concat(token);
-		String content = "Click on this link to verify your address:".concat(redirectLink)
+		String subroute = "/register";
+		String redirectLink = hostname.concat(subroute).concat("?token=").concat(token);
+		String content = "Click on this link to verify your email address:".concat(redirectLink)
 		.concat("\n if it is not you, please ignore this.");
 		sendMail(content, new String[]{email});
 	}
-	public static void sendInvitationMail(Event e, String[] recipients) {
+	public static void sendInvitationMail(Event e, User recipient) {
 		String subroute = "/invite";
+		JwtHelper jwt = new JwtHelper().put("eventID", e.eventID).put("username", recipient.username);
+		String acceptToken = jwt.put("accept", true).createToken();
 		String acceptLink = hostname.concat(subroute).concat("?token=").concat(acceptToken);
-		String denyLink = hostname.concat(subroute).concat("?token=").concat(denyToken);
-		String content = "You are invited to a meeting named ${} by ...".concat(acceptLink).concat(denyLink)
+		// String denyToken = jwt.put("accept", false).createToken();
+		// String denyLink = hostname.concat(subroute).concat("?token=").concat(denyToken);
+		String content = String.format("You are invited to a meeting named %s hosted by %s: click here to accept:", e.eventName,e.organizer)
+		.concat(acceptLink)//.concat("\n or deny:").concat(denyLink)
 		.concat("\n if it is not you, please ignore this.");
-		sendMail(content, recipients);
+		sendMail(content, new String[]{recipient.email});
 	}
+
 }
