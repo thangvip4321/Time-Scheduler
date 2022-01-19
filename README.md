@@ -46,3 +46,5 @@ Events (
 	  REFERENCES Users(username)
 );
 ```
+
+# The schema for this can be found in `sqlscript/createDatabase.pgsql`
