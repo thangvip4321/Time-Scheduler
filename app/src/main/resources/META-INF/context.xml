@@ -29,8 +29,8 @@
       type="javax.sql.DataSource" 
       maxTotal="100" maxIdle="30" 
       maxWaitMillis="10000" driverClassName="org.postgresql.Driver" 
-      url="jdbc:postgresql://127.0.0.1:5432/timescheduler" 
-      username="thang" password="060901ttvt" />
+      url="jdbc:postgresql://127.0.0.1:5432/time_scheduler" 
+      username="root" password="djtmeaothatday" />
   <Environment name="pwKey" value="intel123" type="java.lang.String"/>
 
 

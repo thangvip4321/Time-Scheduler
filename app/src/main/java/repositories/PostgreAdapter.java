@@ -3,7 +3,6 @@ package repositories;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Instant;
 
 import javax.naming.NamingException;
 
@@ -18,7 +17,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class PostgreAdapter implements DataRepository {
     private JdbcTemplate conn;
@@ -168,6 +166,7 @@ public class PostgreAdapter implements DataRepository {
     public User findOwnerOfEvent(int eid) {
         Event e = findEventByID(eid);
         if(e == null) return null;
+        System.out.println();
         return findUserByName(e.organizer);
     }
     

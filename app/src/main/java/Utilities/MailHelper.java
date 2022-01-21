@@ -14,7 +14,7 @@ public class MailHelper {
     // which is the email that i put this app password?
     static String sender= App.prop.getProperty("email");
 	static String password = App.prop.getProperty("mailPassword");
-	static String hostname= "https://"+App.prop.getProperty("hostname").concat(App.prop.getProperty("port"));
+	static String hostname= "https://"+App.prop.getProperty("hostname").concat(":").concat(App.prop.getProperty("port"));
 	static Properties mailProps = new Properties();
 
 	// this work
