@@ -33,6 +33,15 @@
         <url-pattern>/event</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>InviteServlet</servlet-name>
+        <servlet-class>servlet.InviteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InviteServlet</servlet-name>
+        <url-pattern>/invite</url-pattern>
+    </servlet-mapping>
+    
     
     <filter>
         <filter-name>authentication filter</filter-name>

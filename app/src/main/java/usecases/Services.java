@@ -54,6 +54,7 @@ public class Services {
     public void registerAfterReceivingConfirmationMail(String token) throws IllegalAccessException{
         JwtHelper jwt = new JwtHelper();
         try {
+            // this looks ugly
            Map<String, Object> userInfo =jwt.parseToken(token);
            String username = (String) userInfo.get("username");
            String email = (String) userInfo.get("email");
@@ -70,24 +71,30 @@ public class Services {
         }
     }
 
-    public boolean login(String username,String password){
+    public User login(String username,String password){
         String hashed = repo.showHashedPassword(username);
-        if(hashed==null){return false;}
+        User u = repo.findUserByName(username);
+        if(hashed==null){return null;}
         boolean isPasswordCorrect=  BCrypt.checkpw(password, hashed);
-        return isPasswordCorrect;
+        if (!isPasswordCorrect) {
+            return null;
+        }
+        return u;
     }
 
     // this should return a whole event object with eventID for further identification
     public Event addEvent(Event e){
         e.eventID = repo.addEvent(e);
-        User[] participantList = (User[]) e.participantsList.stream().map(participantName -> new User(participantName)).toArray();
+        User[] participantList =  e.participantsList.stream().map(participantName -> new User(participantName)).toArray(User[]::new);
         inviteParticipants(e,participantList);
         return e;
     }
     public boolean deleteEvent(Event e,User requester){
         boolean isDeleted = false;
+        Event ev = repo.findEventByID(e.eventID);
+        if(ev==null) return false;
         User u = repo.findOwnerOfEvent(e.eventID);
-        if(u.username==requester.username){
+        if(u.username.equals(requester.username)){
             isDeleted = repo.deleteEvent(e);
         }
         return isDeleted;
@@ -97,8 +104,10 @@ public class Services {
     // this func need eventID to edit it
     public boolean editEvent(Event e,User requester){
         boolean isUpdated = false;
+        Event ev = repo.findEventByID(e.eventID);
+        if(ev==null) return false;
         User u = repo.findOwnerOfEvent(e.eventID);
-        if(u.username==requester.username){
+        if(u.username.equals(requester.username)){
             isUpdated = repo.editEvent(e);
             if (isUpdated) {
                 notifyParticipants("the event is changed, please reload your app", e);
@@ -111,6 +120,7 @@ public class Services {
     }
     public void inviteParticipants(Event e,User[] participants){
         for (User user : participants) {
+            user = repo.findUserByName(user.username);
             MailHelper.sendInvitationMail(e,user);
         }
     };
@@ -123,8 +133,8 @@ public class Services {
     }
     public void notifyParticipants(String content,Event e) {
         e = repo.findEventByID(e.eventID);
-        String[] recipients = (String[]) e.participantsList.stream().map(name -> repo.findUserByName(name).email).toArray();
-        MailHelper.sendMail(content,recipients);
+        String[] recipients =  e.participantsList.stream().map(name -> repo.findUserByName(name).email).toArray(String[]::new);
+        MailHelper.sendMail("new update on your event",content,recipients);
     }
     
     

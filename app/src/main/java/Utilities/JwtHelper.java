@@ -1,16 +1,22 @@
 package Utilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+
 
 public class JwtHelper {
     // static Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode("vietnamvodichvjppro1234"));
@@ -18,8 +24,11 @@ public class JwtHelper {
     static{
         try {
             InitialContext initialContext = new InitialContext();
-            Context envContext = initialContext.lookup("java:comp/env");
-        } catch (NamingException e) {
+            Context envContext = (Context) initialContext.lookup("java:comp/env");
+            String password = (String) envContext.lookup("pwKey");
+            KeyStore ks = KeyStore.getInstance(new File("src/main/resources/test.jks"), password.toCharArray());
+            key = ks.getKey("mykey", password.toCharArray());
+        } catch (NamingException | KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException | UnrecoverableKeyException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

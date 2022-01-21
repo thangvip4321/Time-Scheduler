@@ -32,7 +32,7 @@ public class RegisterServlet extends HttpServlet {
             // resp.setHeader("token", new JwtHelper().put("username", u.name).put("issued date", new Date().getTime()).createToken());
             writer.println("check your mail pls");
             // send the jwt token
-        }else {resp.setStatus(500);
+        }else {resp.setStatus(403);
             writer.println("email invalid or password is not strong, please try again");
         }
         writer.flush();
@@ -50,6 +50,7 @@ public class RegisterServlet extends HttpServlet {
         Services allUsecase =Factory.servicesFactory();
         try {
             allUsecase.registerAfterReceivingConfirmationMail(token);
+            resp.getWriter().println("thank you now you can close this window");
         } catch (IllegalAccessException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

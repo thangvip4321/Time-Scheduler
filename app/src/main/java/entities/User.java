@@ -34,6 +34,9 @@ public class User {
     public User(String name){
         this(name,null);
     }
+    public User(String name,int id){
+        this(name,null,id);
+    }
 
 
 }

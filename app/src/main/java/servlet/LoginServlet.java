@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import Utilities.Factory;
 import Utilities.JwtHelper;
 import entities.User;
 import repositories.PostgreAdapter;
@@ -25,15 +26,15 @@ public class LoginServlet extends HttpServlet {
         // this is a very big assumption that the json message is on only 1 line.
         // String jsonString = req.getReader().readLine();
         User u = new ObjectMapper().reader(User.class).readValue(req.getReader());
-        boolean isUserInDatabase = new Services(new PostgreAdapter()).login(u.username, u.password);
-        if(isUserInDatabase) {
+        User result = Factory.servicesFactory().login(u.username, u.password);
+        if(result != null) {
             resp.setStatus(200);
-            resp.setHeader("token", new JwtHelper().put("username", u.username)
+            resp.setHeader("token", new JwtHelper().put("username", result.username)
                                                    .put("issued date", new Date().getTime())
-                                                   .put("uid",u.userID).createToken());
+                                                   .put("userID",result.userID).createToken());
             writer.println("login successfully");
             // send the jwt token
-        }else {resp.setStatus(500);
+        }else {resp.setStatus(400);
             writer.println("Incorrect login");
         }
         writer.flush();

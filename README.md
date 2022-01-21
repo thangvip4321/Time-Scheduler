@@ -28,7 +28,7 @@ Users (
     "eventID": int,
     "name": string,
     "organizer": string,
-    "date": string,
+    "date": "2021-12-12T09:36:50.00",
     "priority": int,
     "participants list": [name1,name2,...],
 }
@@ -39,7 +39,7 @@ Events (
     eventname varchar(50) NOT NULL,
     organizer varchar(50) NOT NULL,
     eid SERIAL PRIMARY KEY,
-    event_date Instant NOT NULL,
+    event_date Timestamp NOT NULL,
     priority int,
     CONSTRAINT fk_customer
       FOREIGN KEY(organizer) 

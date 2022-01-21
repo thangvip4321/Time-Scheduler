@@ -28,7 +28,10 @@ public class AuthenticateFilter extends HttpFilter{
         try {
             Map<String,Object> userIdentifier = new JwtHelper().parseToken(token);
             String username = (String) userIdentifier.get("username");
-            request.setAttribute("currentUser", new User(username));
+            System.out.println("name: "+username);
+            System.out.println(userIdentifier.get("userID"));
+            int userID = (int) userIdentifier.get("userID");
+            request.setAttribute("currentUser", new User(username,userID));
             chain.doFilter(request, response);
         } catch (SignatureException e) {
             // the token is invalid or the token simply not exist

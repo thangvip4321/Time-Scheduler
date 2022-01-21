@@ -5,52 +5,60 @@ package gradle_tish_embedded;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.WebResourceRoot;
-import org.apache.catalina.WebResourceSet;
-import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.catalina.webresources.DirResourceSet;
-import org.apache.catalina.webresources.EmptyResourceSet;
-import org.apache.catalina.webresources.StandardRoot;
-import org.apache.tomcat.util.descriptor.web.ContextResource;
+import org.apache.coyote.http11.Http11Nio2Protocol;
 
-import Utilities.JwtHelper;
-import io.jsonwebtoken.io.Encoders;
 
-import javax.servlet.ServletException;
-import javax.sql.DataSource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-public class App {
+import java.util.Properties;
 
+public class App {
+    public static Properties prop;
     public static void main(String[] args) throws Exception {
         easyMain(args);
     }
     public static void easyMain(String[] args)
-            throws LifecycleException, InterruptedException, ServletException {
+            throws Exception {
         Tomcat tomcat = new Tomcat();
-        // tomcat.setHostname("192.168.0.102");
-        tomcat.setHostname("localhost");
-        tomcat.setPort(8080);
+
+        prop = new Properties();
+        String fileName = "./src/main/resources/app.properties";
+        FileInputStream fis = new FileInputStream(fileName);
+        prop.load(fis);
+
+        int port = Integer.parseInt(prop.getProperty("port"));
+        String hostname = App.prop.getProperty("hostname");
+        String keyStorePass = App.prop.getProperty("keyStorePass");
+        tomcat.setHostname(hostname);
+
         // idk why we need this connector, maybe for connecting via http?
-        tomcat.getConnector();
-        System.out.println(new File(".").getAbsolutePath());
+        System.out.println(System.getProperty("user.dir"));
+        Http11Nio2Protocol protocolHandler = new Http11Nio2Protocol();
+        protocolHandler.setPort(port);
+        protocolHandler.setSSLEnabled(true);
+        // protocolHandler.setSSL(true);
+        protocolHandler.setKeystoreFile("../src/main/resources/demoKey");
+        protocolHandler.setKeystorePass(keyStorePass);
+        protocolHandler.setKeyAlias("mykey");
+        // protocolHandler.setSSLVerifyClient(Boolean.toString(true));
+        System.out.println(protocolHandler.isSSLEnabled());
+        Connector conn = new Connector(protocolHandler);
+        tomcat.setConnector(conn);
+
+
+        Context ctx = tomcat.addWebapp("", new File("./src/main/resources").getAbsolutePath());
         // by default jndi is disabled in tomcat embedded
         tomcat.enableNaming();
 
         // set config file for ctx must be done first be4 being registered to the virtual host
         // the minor difference between addWebapp and addContext is addWebApp also 
         // include a context.xml and web.xml while addContext doesnt
-        Context ctx = tomcat.addWebapp("", new File("./src/main/resources").getAbsolutePath());
+
         // Tomcat.addServlet(ctx, "hello", new HelloServlet());
         // Tomcat.addServlet(ctx, "userList", new UserListServlet());
         // ctx.addServletMappingDecoded("/*", "hello");
@@ -58,8 +66,7 @@ public class App {
 
         // A problem when connecting to postgres is that you need to have an 
         // org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory 
-        // List<String> lmao = new ArrayList<String>(); 
-        System.out.println(Encoders.BASE64.encode(JwtHelper.key.getEncoded()));
+
         
         tomcat.start();
         tomcat.getServer().await();

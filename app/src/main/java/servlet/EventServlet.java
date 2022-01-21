@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,9 @@ public class EventServlet extends HttpServlet {
         // this is the endpoint for adding event
         User currentUser = (User) req.getAttribute("currentUser");
         Event eventToBeCreated = JsonHelper.extractEvent(req.getReader());
-        if(currentUser.username != eventToBeCreated.eventName){
+        System.out.println(eventToBeCreated.organizer+","+eventToBeCreated.organizer+",");
+        System.out.println(currentUser.username.equals(eventToBeCreated.organizer));
+        if(!currentUser.username.equals(eventToBeCreated.organizer)){
             resp.setStatus(400);
             resp.getWriter().write("the user adding the event does not match the event organizer");
             return;
@@ -49,7 +52,8 @@ public class EventServlet extends HttpServlet {
         Event eventToBeChanged = JsonHelper.extractEvent(req.getReader());
         boolean canUpdateEvent =  Factory.servicesFactory().editEvent(eventToBeChanged, currentUser);
         if(!canUpdateEvent){
-            resp.getWriter().println("you cannot edit this event");
+            resp.getWriter().println("you cannot edit this event as you are " + currentUser.username);
+            return;
         }
         resp.getWriter().println("Change was made, please reload");
         resp.setStatus(200);
@@ -61,7 +65,7 @@ public class EventServlet extends HttpServlet {
         Event eventToBeChanged = JsonHelper.extractEvent(req.getReader());
         boolean canDeleteEvent = Factory.servicesFactory().deleteEvent(eventToBeChanged, currentUser);
         if(!canDeleteEvent){
-            resp.getWriter().println("you cannot edit this event");
+            resp.getWriter().println("you cannot delete this event");
         }
         resp.getWriter().println("Change was made, please reload");
         resp.setStatus(200);

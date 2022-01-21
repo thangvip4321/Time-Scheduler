@@ -2,6 +2,7 @@ package repositories;
 
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
 
 import javax.naming.NamingException;
@@ -14,6 +15,7 @@ import Utilities.DBHelper;
 import entities.Event;
 import entities.User;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +57,8 @@ public class PostgreAdapter implements DataRepository {
 
     @Override
     public int addEvent(Event event) {
-        int eid = conn.queryForObject("Insert into events (eventname,organizer,event_date) VALUES (?,?,?) RETURNING eid;",int.class,event.eventName,event.organizer,event.date);
+        int eid = conn.queryForObject("Insert into events (eventname,organizer,event_date) VALUES (?,?,?) RETURNING eid;"
+        ,int.class,event.eventName,event.organizer,Timestamp.from(event.date));
         return eid;
     }
 
@@ -69,32 +72,35 @@ public class PostgreAdapter implements DataRepository {
 
     @Override
     public boolean editEvent(Event event) {
-        conn.update("UPDATE events set eventname=?,event_date=? where eid=?",event.eventName,event.date,event.eventID);
+        conn.update("UPDATE events set eventname=?,event_date=? where eid=?",event.eventName,Timestamp.from(event.date),event.eventID);
         return true;
     }
 
     @Override
     public List<Event> findEventsFromUser(User u) {
-        List<Map<String, Object>> mapList= 
-        conn.queryForList("SELECT * FROM events e WHERE e.eid in (SELECT eid FROM userevent where uid=?)",u.userID);
-        
+        List<Event> evList = new ArrayList<Event>();
+        SqlRowSet rs= 
+        conn.queryForRowSet("SELECT * FROM events e WHERE e.eid in (SELECT eid FROM userevent where uid=?)",u.userID);
+        while (rs.next()) {
+            int eventID = rs.getInt("eid");
+            evList.add(new Event(eventID, rs.getString("eventname"), 
+                rs.getString("organizer"), rs.getTimestamp("event_date").toInstant(), 
+                rs.getInt("priority"), findParticipants(eventID)));
+        }
 
-        Event[] evList= mapList.stream().map(map ->{
-            String eventName = (String) map.get("eventname");
-            String organizer = (String) map.get("organizer");
-            int eventId = (int) map.get("eid");
-            Instant eventDate = (Instant) map.get("event_date");
-            int priority = (int) map.get("priority");
-            List<String> participantList = findParticipants(eventId);
-            return new Event(eventId,eventName,organizer,eventDate,priority,participantList);
-        }).toArray(Event[]::new);
-        
-        return Arrays.asList(evList);
+        rs = conn.queryForRowSet("SELECT * FROM events e WHERE organizer=?",u.username);
+        while (rs.next()) {
+            int eventID = rs.getInt("eid");
+            evList.add(new Event(eventID, rs.getString("eventname"), 
+                rs.getString("organizer"), rs.getTimestamp("event_date").toInstant(), 
+                rs.getInt("priority"), findParticipants(eventID)));
+        }
+        return evList;
     }
     private List<String> findParticipants(int eid){
-        String[] participantList = (String[]) conn.queryForList(
-                    "SELECT username FROM users natural join userevent where eid=?)",eid)
-                .stream().map(userMap -> userMap.get("username")).toArray();
+        String[] participantList =  conn.queryForList(
+                    "SELECT username FROM users natural join userevent where eid=?",eid)
+                .stream().map(userMap -> userMap.get("username")).toArray(String[]::new);
         return Arrays.asList(participantList);
     }
 
@@ -161,6 +167,7 @@ public class PostgreAdapter implements DataRepository {
     @Override
     public User findOwnerOfEvent(int eid) {
         Event e = findEventByID(eid);
+        if(e == null) return null;
         return findUserByName(e.organizer);
     }
     
