@@ -4,7 +4,6 @@
 package gradle_tish_embedded;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.Http11Nio2Protocol;
@@ -14,7 +13,6 @@ import org.apache.coyote.http11.Http11Nio2Protocol;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 public class App {
@@ -44,6 +42,7 @@ public class App {
         int port = Integer.parseInt(prop.getProperty("port"));
         String hostname = App.prop.getProperty("hostname");
         String keyStorePass = App.prop.getProperty("keyStorePass");
+        String keyStoreName = App.prop.getProperty("keyStoreName");
         tomcat.setHostname(hostname);
 
         // idk why we need this connector, maybe for connecting via http?
@@ -52,7 +51,7 @@ public class App {
         protocolHandler.setPort(port);
         protocolHandler.setSSLEnabled(true);
         // protocolHandler.setSSL(true);
-        protocolHandler.setKeystoreFile("../src/main/resources/demoKey");
+        protocolHandler.setKeystoreFile("../src/main/resources/"+keyStoreName);
         protocolHandler.setKeystorePass(keyStorePass);
         protocolHandler.setKeyAlias("mykey");
         // protocolHandler.setSSLVerifyClient(Boolean.toString(true));
