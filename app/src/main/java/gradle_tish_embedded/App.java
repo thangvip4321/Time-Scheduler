@@ -19,9 +19,19 @@ import java.util.Properties;
 
 public class App {
     public static Properties prop;
+    
+    /** 
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         easyMain(args);
     }
+    
+    /** 
+     * @param args
+     * @throws Exception
+     */
     public static void easyMain(String[] args)
             throws Exception {
         Tomcat tomcat = new Tomcat();

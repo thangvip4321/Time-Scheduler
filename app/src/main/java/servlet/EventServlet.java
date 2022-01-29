@@ -17,7 +17,17 @@ import Utilities.JsonHelper;
 import entities.Event;
 import entities.User;
 
+
+/** this is for all request that heads to the /event endpoints
+ */
 public class EventServlet extends HttpServlet {
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // TODO Auto-generated method stub
@@ -29,6 +39,13 @@ public class EventServlet extends HttpServlet {
         resp.getWriter().write(body);
     }
 
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // this is the endpoint for adding event
@@ -46,28 +63,48 @@ public class EventServlet extends HttpServlet {
         resp.setStatus(200);
     }
 
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = (User) req.getAttribute("currentUser");
         Event eventToBeChanged = JsonHelper.extractEvent(req.getReader());
         boolean canUpdateEvent =  Factory.servicesFactory().editEvent(eventToBeChanged, currentUser);
         if(!canUpdateEvent){
-            resp.getWriter().println("you cannot edit this event as you are " + currentUser.username);
+            resp.getWriter().println("you cannot edit this event");
             return;
         }
         resp.getWriter().println("Change was made, please reload");
         resp.setStatus(200);
     }
 
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = (User) req.getAttribute("currentUser");
-        Event eventToBeChanged = JsonHelper.extractEvent(req.getReader());
-        boolean canDeleteEvent = Factory.servicesFactory().deleteEvent(eventToBeChanged, currentUser);
+        int eventID=-1;
+        try {
+            eventID =   Integer.parseInt(req.getParameter("eventID"));
+        } catch (Exception e) {
+            throw new ServletException("the eventID parameter must be an integer");
+        }
+        boolean canDeleteEvent = Factory.servicesFactory().deleteEvent(eventID, currentUser);
         if(!canDeleteEvent){
             resp.getWriter().println("you cannot delete this event");
+        }else{
+            resp.getWriter().println("Change was made, please reload");
         }
-        resp.getWriter().println("Change was made, please reload");
         resp.setStatus(200);
     }
 }

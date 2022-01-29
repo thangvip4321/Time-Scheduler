@@ -19,6 +19,14 @@ import repositories.PostgreAdapter;
 import usecases.Services;
 
 public class LoginServlet extends HttpServlet {
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws JsonProcessingException
+     * @throws IOException
+     */
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, JsonProcessingException, IOException{
         PrintWriter writer = resp.getWriter();
@@ -39,6 +47,12 @@ public class LoginServlet extends HttpServlet {
         }
         writer.flush();
     }
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws IOException
+     */
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         // should be a server side rendering here but wtf am i doing
         resp.setStatus(200);

@@ -38,17 +38,37 @@ public class JwtHelper {
     public JwtHelper(){
         claim = new HashMap<String,Object>();
     }
+    
+    /** 
+     * @param key
+     * @param value
+     * @return JwtHelper
+     */
     public JwtHelper put(String key,Object value) {
         claim.put(key, value);
         return this;
     }
+    
+    /** 
+     * @param claim
+     * @return String
+     */
     public static String createTokenWithJsonClaim(HashMap<String,?> claim) {
         String token = Jwts.builder().setClaims(claim).signWith(key).compact();
         return token;
     }
+    
+    /** 
+     * @return String
+     */
     public String createToken() {
         return Jwts.builder().setClaims(claim).signWith(key).compact();
     }
+    
+    /** 
+     * @param token
+     * @return Map<String, Object>
+     */
     public Map<String,Object> parseToken(String token){
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }

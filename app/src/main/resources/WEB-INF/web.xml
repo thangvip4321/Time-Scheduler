@@ -41,6 +41,15 @@
         <servlet-name>InviteServlet</servlet-name>
         <url-pattern>/invite</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ExceptionServlet</servlet-name>
+        <servlet-class>servlet.ExceptionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ExceptionServlet</servlet-name>
+        <url-pattern>/exception</url-pattern>
+    </servlet-mapping>
     
     
     <filter>
@@ -52,4 +61,14 @@
         <url-pattern>/event</url-pattern>
     </filter-mapping>
 
+
+  <error-page>
+  	<error-code>404</error-code>
+  	<location>/AppExceptionHandler</location>
+  </error-page>
+  
+  <error-page>
+  <exception-type>java.lang.Exception</exception-type>
+  <location>/exception</location>
+  </error-page>
 </web-app>

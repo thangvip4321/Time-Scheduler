@@ -9,22 +9,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import Utilities.Factory;
-import Utilities.JwtHelper;
-import entities.Event;
-import entities.User;
 
 
 // this is mostly for admin to administrate the users, too lazy to do this
-public class UserServlet extends HttpServlet {
+public class AdminServlet extends HttpServlet {
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     // get a list of user
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         
     }
 
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // TODO Auto-generated method stub

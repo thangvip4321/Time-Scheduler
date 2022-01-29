@@ -12,35 +12,56 @@ import entities.Event;
 import entities.User;
 import io.jsonwebtoken.security.SignatureException;
 import repositories.DataRepository;
+import java.lang.IllegalArgumentException;
+import java.time.Instant;
 
 
 // theoretically in the servlet this usecase class should be called.
 // but the logic created here is still too simple so the code in this usecase class
 // will be just like boilerplate code.
+/**
+    * This {@link Services} class contains all business logic code for this Time Scheduler, from login,register,... to add task,delete task,...
+    This code should be changed the least, as changing the code means changing the core logic of our business, thus avoid using any framework-specific 
+    code here as we will be tightly coupled with that framework in the future.
+*/
 public class Services {
     private DataRepository repo;
+    /** 
+     * Create a {@link Services} instance with a {@link DataRepository} object to perform any CRUD operation 
+     * @param repo this represent how these usecase will perform CRUD.
+     */
     public Services(DataRepository repo) {
         this.repo = repo;
     }
 
+    
+    /** 
+     * perform check on registration information, to avoid somebody spamming our server with fake account.
+     * throw specific exception when the info is not legitimate
+     * @param username
+     * @param password
+     * @param email
+     * @return boolean
+     */
     public boolean checkValidRegistration(String username,String password,String email){
-        repo.checkIfUsernameExist(username);
+        if(repo.checkIfUsernameExist(username)){
+            throw new IllegalArgumentException("username has already existed");
+        }
         boolean req1 = FormValidator.validatePassword(password);
         boolean req2 = FormValidator.validateEmail(email);
         if(!req1){
-            System.out.println("Password not strong");
-            return false;
+            throw new IllegalArgumentException("Password not strong enough, must have a lowercase,uppercase, and a symbol");
         }
         if(!req2){
-            System.out.println("invalid email address");
-            return false;
+            throw new IllegalArgumentException("hmm something is wrong with this email format");
         }
 
         //  i need to learn a bit more about elliptic curves and bcrypt and stuff
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         User tmpUser = new User(username,hashedPassword,email);
-        repo.addUserToPending(tmpUser);
-
+        boolean addSuccessfully = repo.addUserToPending(tmpUser);
+        if(!addSuccessfully)
+            throw new IllegalArgumentException("somebody has already registered with this username and email");
 
         JwtHelper jwt = new JwtHelper();
         jwt.put("username", username);
@@ -51,6 +72,11 @@ public class Services {
         // if user click on the link, send request to /confirm servlet with the key
     }
 
+    
+    /** this is called after the potential user confirm their registration
+     * @param token a JWT token attached to the confirmation link.
+     * @throws IllegalAccessException
+     */
     public void registerAfterReceivingConfirmationMail(String token) throws IllegalAccessException{
         JwtHelper jwt = new JwtHelper();
         try {
@@ -58,92 +84,173 @@ public class Services {
            Map<String, Object> userInfo =jwt.parseToken(token);
            String username = (String) userInfo.get("username");
            String email = (String) userInfo.get("email");
-           
+            // consider adding checking null in username, but should we do that? 
 
-           User tmpUser = repo.deleteUserFromPending(username);
+           User tmpUser = repo.findUserInPending(username,email);
            if(tmpUser==null){
-            throw new IllegalAccessException("looks like somebody has already created an account with this username");
-
+            throw new IllegalArgumentException("looks like somebody has already created an account with this username");
            }
            repo.createUser(tmpUser);
         } catch (SignatureException e) {
-            throw new IllegalAccessException("the confirm link you sent is invalid");
+            throw new IllegalArgumentException("the confirm link you sent is invalid");
         }
     }
 
+    
+    /** this is called to check the validity of user's credential when logging into the system.
+     * @param username
+     * @param password
+     * @return User
+     * @throws IllegalAccessError if the username or password is not correct
+     */
     public User login(String username,String password){
         String hashed = repo.showHashedPassword(username);
         User u = repo.findUserByName(username);
-        if(hashed==null){return null;}
+        if(hashed==null){throw  new IllegalAccessError("username does not exist");}
         boolean isPasswordCorrect=  BCrypt.checkpw(password, hashed);
         if (!isPasswordCorrect) {
-            return null;
+            throw  new IllegalAccessError("password incorrect");
         }
         return u;
     }
 
-    // this should return a whole event object with eventID for further identification
+    
+    /** this is called when a user create an event.
+     * @param e a fully populated {@link Event} object. All non-existent username in participant list will be ignored.
+     * @return {@link Event} a whole event object with eventID for further identification
+     * @throws IllegalArgumentException when user set event date in the past.
+     */
     public Event addEvent(Event e){
+        if(e.date.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
         e.eventID = repo.addEvent(e);
-        User[] participantList =  e.participantsList.stream().map(participantName -> new User(participantName)).toArray(User[]::new);
+        User[] participantList =  e.participantsList.stream().map(participantName -> {
+            return new User(participantName);}).toArray(User[]::new);
         inviteParticipants(e,participantList);
         return e;
     }
-    public boolean deleteEvent(Event e,User requester){
-        boolean isDeleted = false;
-        Event ev = repo.findEventByID(e.eventID);
-        if(ev==null) return false;
-        User u = repo.findOwnerOfEvent(e.eventID);
-        if(u.username.equals(requester.username)){
-            isDeleted = repo.deleteEvent(e);
-        }
-        return isDeleted;
+    
+    /** this is called when a user delete an event.
+     * @param eid an integer representing the id of the event
+     * @param requester a {@code User} object representing the user who want to delete the event
 
+     * @return a {@code boolean} specify if the event is successfully deleted. Will return false if:
+     * <ul>
+     * <li>the user requesting to delete the event is not the owner of the event</li>
+     * <li>Or the id does not correspond to any event</li>
+     * </ul>
+     */
+    public boolean deleteEvent(int eid,User requester){
+        boolean isDeleted = false;
+        Event ev = repo.findEventByID(eid);
+        if(ev==null) return false;
+        User u = repo.findOwnerOfEvent(eid);
+        if(u.username.equals(requester.username)){
+            isDeleted = repo.deleteEvent(eid);
+            if(isDeleted)
+                notifyParticipants("the event with ID:"+ eid+ "has been changed, please reload your app", ev);
+        }
+        //
+        // ok what i should do here is to create an exception which is specific to our application
+        // call it CoreLogicException and throw it whenever the user made any mistake in sending request to our server.
+        // and let another servlet show it to user.
+        return isDeleted;
     }
 
-    // this func need eventID to edit it
+    
+
+        /** this is called when a user delete an event.
+     * @param e an Event object which need an eventID
+     * @param requester a {@code User} object representing the user who want to edit the event
+
+     * @return a {@code boolean} specify if the event is successfully edtied. Will return false if:
+     * <ul>
+     * <li>the user requesting to edited the event is not the owner of the event</li>
+     * <li>Or the id does not correspond to any event</li>
+     * </ul>
+     */
     public boolean editEvent(Event e,User requester){
         boolean isUpdated = false;
+        System.out.println(e.eventID);
         Event ev = repo.findEventByID(e.eventID);
-        if(ev==null) return false;
+        if(ev==null) throw new IllegalArgumentException("we cannot find the event you want to delete with the provided eventID");
         User u = repo.findOwnerOfEvent(e.eventID);
         if(u.username.equals(requester.username)){
             isUpdated = repo.editEvent(e);
             if (isUpdated) {
-                notifyParticipants("the event is changed, please reload your app", e);
+                notifyParticipants("the event with ID:"+ e.eventID+ "has been changed, please reload your app", e);
             }
         }
         return isUpdated;
     }
+    
+    /** this is called when a user wants to find all events they are involved in
+     * @param u a User object, which must include a userID and username
+     * @return a {@code List} of {@code Event} of the user. 
+     * @throws IllegalArgumentException if username and userID is not in {@code u} 
+     */
     public List<Event> checkEventsList(User u){
+        if(u.username == null || u.userID==-1) throw new IllegalArgumentException("username and userID must both be provided");
         return repo.findEventsFromUser(u);
     }
+    
+    /** a function to invite other participant to an event
+     * @param e an Event object
+     * @param participants  a list of User object which only requires name
+     */
     public void inviteParticipants(Event e,User[] participants){
         for (User user : participants) {
             user = repo.findUserByName(user.username);
+            if(user== null) return;
             MailHelper.sendInvitationMail(e,user);
         }
     };
+    
+    /** this is called after user accept the invitation.
+     * @param e
+     * @param u
+     * @throws IllegalArgumentException if {@code eventID} is null or username does not exist
+     */
     public void afterAcceptInvitation(Event e,User u) {
         e = repo.findEventByID(e.eventID);
-        if(e==null){return;}
+        if(e==null){
+            throw new IllegalArgumentException("eventID cannot be null");
+        }
         u = repo.findUserByName(u.username);
-        if(u==null){return;}
+        if(u==null){throw new IllegalArgumentException("no such user exist");}
         repo.addParticipant(e.eventID,u.userID);
     }
+    
+    /** 
+     * send notification to the participant of the event
+     * @param content a {@code String} describing the content of the email we want to send
+     * @param e a fully populated {@code Event} 
+     * 
+     */
     public void notifyParticipants(String content,Event e) {
-        e = repo.findEventByID(e.eventID);
-        String[] recipients =  e.participantsList.stream().map(name -> repo.findUserByName(name).email).toArray(String[]::new);
+        String[] recipients =  e.participantsList.stream().map(name -> repo.findUserByName(name))
+        .filter(user -> (user != null))
+        .map(user ->user.email).toArray(String[]::new);
         MailHelper.sendMail("new update on your event",content,recipients);
     }
-    
-    
-    // public boolean authenticate(){
-        // return false;
-    // }
-    // public void editProfile(){}
 
-    // public void findUser(); // by ID or not
-    // public void findEventByID();
-    // block user if too many time failed.
+    /** 
+     * a function for admin to see all users in the system
+     * @return a List of User 
+     * 
+     */
+    public List<User> seeAllUser() {
+        return repo.findAllUser();
+        // return null;    
+    }
+
+    /** 
+     * a function for admin to delete a specific in the system
+     * @param username the username of the user 
+     * @return {@code boolean}: indicate whether the username is deleted or not
+     * 
+     */
+    public boolean deleteUser(String username){
+
+        return repo.deleteUser(username)==1;
+    }   
 }

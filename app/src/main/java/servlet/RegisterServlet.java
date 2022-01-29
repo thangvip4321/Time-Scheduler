@@ -17,6 +17,14 @@ import io.jsonwebtoken.io.IOException;
 import repositories.PostgreAdapter;
 import usecases.Services;
 public class RegisterServlet extends HttpServlet {
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     * @throws java.io.IOException
+     */
     // server will only validate the login at this point
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, java.io.IOException{
@@ -38,6 +46,14 @@ public class RegisterServlet extends HttpServlet {
         writer.flush();
 
     }
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     * @throws java.io.IOException
+     */
     // this is what happen after the user click the link on the mail
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, java.io.IOException{

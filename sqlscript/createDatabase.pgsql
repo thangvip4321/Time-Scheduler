@@ -9,8 +9,8 @@ create table Events (
     eventname varchar(50) NOT NULL,
     organizer varchar(50) NOT NULL,
     eid SERIAL PRIMARY KEY,
-    event_date Instant NOT NULL,
-    priority int,
+    event_date timestamp NOT NULL,
+    priority varchar(10),
     CONSTRAINT fk_customer
       FOREIGN KEY(organizer) 
 	  REFERENCES Users(username)

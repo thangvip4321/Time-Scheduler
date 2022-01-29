@@ -14,6 +14,13 @@ import entities.Event;
 import entities.User;
 
 public class InviteServlet extends HttpServlet {
+    
+    /** 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // TODO Auto-generated method stub
@@ -22,5 +29,6 @@ public class InviteServlet extends HttpServlet {
         int eventID= (int) invitationDetails.get("eventID");
         String username = (String) invitationDetails.get("username");
         Factory.servicesFactory().afterAcceptInvitation(new Event(eventID), new User(username));
+        resp.getWriter().println("you have been registered in the event, please reload the app");
     }
 }
