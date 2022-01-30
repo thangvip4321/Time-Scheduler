@@ -8,9 +8,9 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.Http11Nio2Protocol;
-
-
-
+import org.quartz.Scheduler;
+import org.quartz.SchedulerFactory;
+import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +24,12 @@ public class App {
     }
     public static void easyMain(String[] args)
             throws Exception {
+
+        // initialize scheduler
+        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        Scheduler scheduler = schedulerFactory.getScheduler();
+
+        
         Tomcat tomcat = new Tomcat();
 
         prop = new Properties();

@@ -85,12 +85,14 @@ public class Services {
     // this should return a whole event object with eventID for further identification
     public Event addEvent(Event e){
         e.eventID = repo.addEvent(e);
+        // add reminder job to the scheduler
         User[] participantList =  e.participantsList.stream().map(participantName -> new User(participantName)).toArray(User[]::new);
         inviteParticipants(e,participantList);
         return e;
     }
     public boolean deleteEvent(Event e,User requester){
         boolean isDeleted = false;
+        // delete job in the scheduler
         Event ev = repo.findEventByID(e.eventID);
         if(ev==null) return false;
         User u = repo.findOwnerOfEvent(e.eventID);
@@ -103,6 +105,7 @@ public class Services {
 
     // this func need eventID to edit it
     public boolean editEvent(Event e,User requester){
+        // edit event in the scheduler
         boolean isUpdated = false;
         Event ev = repo.findEventByID(e.eventID);
         if(ev==null) return false;

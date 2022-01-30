@@ -28,7 +28,8 @@ public class Event {
     public Instant date;
     public String eventName;
     public Integer eventID;
-    public int priority;
+    public int priority; 
+    // Enum remind time {15 phut, 1 tieng, 4 tieng, 1 ngay, 1 tuan}
     @JsonCreator
     public Event(@JsonProperty("eventID")int eventID,
                  @JsonProperty("name")String eventName,

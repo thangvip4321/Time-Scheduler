@@ -107,7 +107,10 @@ public class PostgreAdapter implements DataRepository {
         Event e = null;
         while (rs.next()) {
             e =new Event(eid,rs.getString("eventname"),
-            rs.getString("organizer"),rs.getTimestamp("event_date").toInstant(),rs.getInt("priority"),findParticipants(eid));
+            rs.getString("organizer"),
+                        rs.getTimestamp("event_date").toInstant(),
+                        rs.getInt("priority"),
+                        findParticipants(eid));
         }
         return e;
     }
@@ -152,7 +155,8 @@ public class PostgreAdapter implements DataRepository {
     @Override
     public boolean checkIfUsernameExist(String username) {
         User u =findUserByName(username);
-        return !(u==null);
+        // return !(u==null);
+        return (u!=null);
     }
 
     @Override
