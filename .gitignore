@@ -7,7 +7,7 @@ conf/
 app/bin
 app/build
 .vscode
-app/src/main/resources
+./app/src/main/resources
 
 
-!app/src/main/resources/WEB-INF
+!./app/src/main/resources/WEB-INF
