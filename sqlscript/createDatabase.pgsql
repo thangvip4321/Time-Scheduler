@@ -9,7 +9,9 @@ create table Events (
     eventname varchar(50) NOT NULL,
     organizer varchar(50) NOT NULL,
     eid SERIAL PRIMARY KEY,
-    event_date timestamp NOT NULL,
+    start_time timestamp with time ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_time timestamp with time ZONE NOT NULL,
+    event_location varchar(60) ,
     priority varchar(10),
     CONSTRAINT fk_customer
       FOREIGN KEY(organizer) 
@@ -19,7 +21,9 @@ create table Events (
 create table UserEvent (
     eid int,
     uid int,
-    CONSTRAINT participation_unique UNIQUE (eid,uid)
+    CONSTRAINT participation_unique UNIQUE (eid,uid),
+    CONSTRAINT fk_event FOREIGN KEY(eid) REFERENCES events(eid),
+    CONSTRAINT fk_user FOREIGN KEY(uid) REFERENCES users(uid)
 
 );
 

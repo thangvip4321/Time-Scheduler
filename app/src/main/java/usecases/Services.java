@@ -121,7 +121,9 @@ public class Services {
      * @throws IllegalArgumentException when user set event date in the past.
      */
     public Event addEvent(Event e){
-        if(e.date.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
+        if(e.startFrom.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
+        if(e.startFrom.isAfter(e.endAt)){throw new IllegalArgumentException("cannot set event end before event start");}
+
         e.eventID = repo.addEvent(e);
         User[] participantList =  e.participantsList.stream().map(participantName -> {
             return new User(participantName);}).toArray(User[]::new);
@@ -147,7 +149,7 @@ public class Services {
         if(u.username.equals(requester.username)){
             isDeleted = repo.deleteEvent(eid);
             if(isDeleted)
-                notifyParticipants("the event with ID:"+ eid+ "has been changed, please reload your app", ev);
+                notifyParticipants("the event with ID:"+ eid+ "has been deleted, please reload your app", ev);
         }
         //
         // ok what i should do here is to create an exception which is specific to our application
@@ -169,6 +171,8 @@ public class Services {
      * </ul>
      */
     public boolean editEvent(Event e,User requester){
+        if(e.startFrom.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
+        if(e.startFrom.isAfter(e.endAt)){throw new IllegalArgumentException("cannot set event end before event start");}
         boolean isUpdated = false;
         System.out.println(e.eventID);
         Event ev = repo.findEventByID(e.eventID);

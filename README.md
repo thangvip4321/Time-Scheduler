@@ -11,6 +11,7 @@
     "userID": int
 }
 ```
+
 - in `postgresql`:
 ```postgresql
 Users (
@@ -21,6 +22,7 @@ Users (
 );
 ```
 
+
 # Format for **event** entity:
 - in `json`:
 ```json
@@ -28,19 +30,24 @@ Users (
     "eventID": int,
     "name": string,
     "organizer": string,
-    "date": "2021-12-12T09:36:50.00",
-    "priority": int,
+    "start from": "2021-12-12T09:36:50Z",
+    "end at": "2021-12-12T09:36:50Z",
+    "location": string,
+    "priority": {"LOW"|"MEDIUM"|"HIGH"},
     "participants list": [name1,name2,...],
 }
 ```
+
 - in `postgresql`:
 ```postgresql
-Events (
+create table Events (
     eventname varchar(50) NOT NULL,
     organizer varchar(50) NOT NULL,
     eid SERIAL PRIMARY KEY,
-    event_date Timestamp NOT NULL,
-    priority int,
+    start_time timestamp with time ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_time timestamp with time ZONE NOT NULL,
+    event_location varchar(60) ,
+    priority varchar(10),
     CONSTRAINT fk_customer
       FOREIGN KEY(organizer) 
 	  REFERENCES Users(username)

@@ -62,7 +62,7 @@ public class PostgreAdapter implements DataRepository {
     @Override
     public boolean editUser(User u) {
         // TODO Auto-generated method stub
-        conn.update("UPDATE users set (eventname,event_date)=(?,?) from events where eid=?",u.userID);
+        conn.update("UPDATE users set (eventname,start_time)=(?,?) from events where eid=?",u.userID);
         return true;
 
     }
@@ -74,8 +74,8 @@ public class PostgreAdapter implements DataRepository {
      */
     @Override
     public int addEvent(Event event) {
-        int eid = conn.queryForObject("Insert into events (eventname,organizer,event_date,priority) VALUES (?,?,?,?) RETURNING eid;"
-        ,int.class,event.eventName,event.organizer,Timestamp.from(event.date),event.priority);
+        int eid = conn.queryForObject("Insert into events (eventname,organizer,event_location,start_time,end_time,priority) VALUES (?,?,?,?,?,?) RETURNING eid;"
+        ,int.class,event.eventName,event.organizer,event.location,Timestamp.from(event.startFrom),Timestamp.from(event.endAt),event.priority);
         return eid;
     }
 
@@ -87,8 +87,8 @@ public class PostgreAdapter implements DataRepository {
     @Override
     public boolean deleteEvent(int eventID) {
         // TODO Auto-generated method stub
-        conn.update("Delete from events where eid=?",eventID);
         conn.update("Delete from userevent where eid=?",eventID);
+        conn.update("Delete from events where eid=?",eventID);
         return true;
     }
 
@@ -99,7 +99,8 @@ public class PostgreAdapter implements DataRepository {
      */
     @Override
     public boolean editEvent(Event event) {
-        conn.update("UPDATE events set eventname=?,event_date=? where eid=?",event.eventName,Timestamp.from(event.date),event.eventID);
+        conn.update("UPDATE events set eventname=?,start_time=?,end_time=?,event_location=? where eid=?",
+                    event.eventName,Timestamp.from(event.startFrom),Timestamp.from(event.endAt),event.location,event.eventID);
         return true;
     }
 
@@ -115,17 +116,13 @@ public class PostgreAdapter implements DataRepository {
         conn.queryForRowSet("SELECT * FROM events e WHERE e.eid in (SELECT eid FROM userevent where uid=?)",u.userID);
         while (rs.next()) {
             int eventID = rs.getInt("eid");
-            evList.add(new Event(eventID, rs.getString("eventname"), 
-                rs.getString("organizer"), rs.getTimestamp("event_date").toInstant(), 
-                rs.getString("priority"), findParticipants(eventID)));
+            evList.add(createEventFromRowSet(rs));
         }
 
         rs = conn.queryForRowSet("SELECT * FROM events e WHERE organizer=?",u.username);
         while (rs.next()) {
             int eventID = rs.getInt("eid");
-            evList.add(new Event(eventID, rs.getString("eventname"), 
-                rs.getString("organizer"), rs.getTimestamp("event_date").toInstant(), 
-                rs.getString("priority"), findParticipants(eventID)));
+            evList.add(createEventFromRowSet(rs));
         }
         return evList;
     }
@@ -150,12 +147,17 @@ public class PostgreAdapter implements DataRepository {
         SqlRowSet rs = conn.queryForRowSet("SELECT * FROM events WHERE eid= ?", eid);
         Event e = null;
         while (rs.next()) {
-            e =new Event(eid,rs.getString("eventname"),
-            rs.getString("organizer"),rs.getTimestamp("event_date").toInstant(),rs.getString("priority"),findParticipants(eid));
+            e =createEventFromRowSet(rs);
         }
         return e;
     }
-
+    private Event createEventFromRowSet(SqlRowSet rs){
+        int eid = rs.getInt("eid");
+        return new Event(eid,rs.getString("eventname"),
+        rs.getString("organizer"),rs.getTimestamp("start_time").toInstant()
+        ,rs.getTimestamp("end_time").toInstant(),rs.getString("event_location")
+        ,rs.getString("priority"),findParticipants(eid));
+    }
     
     /** 
      * @param name

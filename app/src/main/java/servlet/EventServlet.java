@@ -2,6 +2,8 @@ package servlet;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +97,7 @@ public class EventServlet extends HttpServlet {
         User currentUser = (User) req.getAttribute("currentUser");
         int eventID=-1;
         try {
-            eventID =   Integer.parseInt(req.getParameter("eventID"));
+            eventID =   Integer.parseInt(req.getHeader("eventID"));
         } catch (Exception e) {
             throw new ServletException("the eventID parameter must be an integer");
         }

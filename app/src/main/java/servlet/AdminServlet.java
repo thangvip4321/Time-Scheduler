@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import Utilities.Factory;
+import Utilities.JsonHelper;
+import entities.User;
+
 
 
 
@@ -24,7 +28,8 @@ public class AdminServlet extends HttpServlet {
     @Override
     // get a list of user
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        
+        List<User> userList =  Factory.servicesFactory().seeAllUser();
+        JsonHelper.serialize(resp.getWriter(), userList);
     }
 
     
@@ -35,9 +40,11 @@ public class AdminServlet extends HttpServlet {
      * @throws IOException
      */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        super.doPost(req, resp);
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String username = req.getHeader("username");
+        boolean isDeleted = Factory.servicesFactory().deleteUser(username);
+        if(isDeleted)
+        resp.getWriter().println("deleted successfully");
     }
 
 

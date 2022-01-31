@@ -44,7 +44,6 @@ public class App {
         String keyStorePass = App.prop.getProperty("keyStorePass");
         String keyStoreName = App.prop.getProperty("keyStoreName");
         tomcat.setHostname(hostname);
-
         // idk why we need this connector, maybe for connecting via http?
         System.out.println(System.getProperty("user.dir"));
         Http11Nio2Protocol protocolHandler = new Http11Nio2Protocol();
@@ -55,6 +54,7 @@ public class App {
         protocolHandler.setKeystorePass(keyStorePass);
         protocolHandler.setKeyAlias("mykey");
         // protocolHandler.setSSLVerifyClient(Boolean.toString(true));
+        
         System.out.println(protocolHandler.isSSLEnabled());
         Connector conn = new Connector(protocolHandler);
         tomcat.setConnector(conn);
