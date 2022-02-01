@@ -81,7 +81,7 @@ public class JobImpl implements Reminder {
             Thread.sleep(Long.MAX_VALUE);
             // executing...
         } catch(Exception e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
         scheduler.shutdown(true);
@@ -361,7 +361,7 @@ public class JobImpl implements Reminder {
                 Thread.sleep(Long.MAX_VALUE);
                 // executing...
             } catch(InterruptedException ex) {
-                ex.printStackTrace();
+                Thread.currentThread().interrupt();
             }
 
             logger.info("--------Shutting down--------------");
@@ -376,7 +376,21 @@ public class JobImpl implements Reminder {
             logger.error("Fails", e);
         }
         
-    
+    }
+
+    @Override
+    public void sendMailBefore3Days(User user, Event event) throws Exception {
+
+        logger.info("preparing to fire alarm for reminding clients");
+        Instant schedTime = Instant.from(event.date).minus(3, ChronoUnit.DAYS);
+        sendNotification(event.eventID, schedTime);
+    }
+
+    @Override
+    public void sendMailBefore1Week(User user, Event event) throws Exception {
         
+        logger.info("preparing to fire alarm for reminding clients");
+        Instant schedTime = Instant.from(event.date).minus(1, ChronoUnit.WEEKS);
+        sendNotification(event.eventID, schedTime);
     }
 }

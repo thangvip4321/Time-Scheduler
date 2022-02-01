@@ -12,15 +12,8 @@ import entities.User;
  * </p>
  * 
  * <p>
- * <code>JobImpl</code> have implemented this interface for the convenience
- * <code>Job</code>s have a name and group associated with them, which
- * should uniquely identify them within a single <code>{@link Scheduler}</code>.
- * </p>
- * 
- * <p>
- * <code>Trigger</code>s are the 'mechanism' by which <code>Job</code>s
- * are scheduled. Many <code>Trigger</code>s can point to the same <code>Job</code>,
- * but a single <code>Trigger</code> can only point to one <code>Job</code>.
+ * <code>JobImpl</code> have implemented this interface<code>{@link Reminder}</code>
+ *  for the convenience.
  * </p>
  * 
  * @see Event
@@ -31,13 +24,41 @@ import entities.User;
  */
 public interface Reminder {
 
-    /*
+    /**
+     * send mail with message before 3 days by organizer.
+     * 
+     * <p> This selection is for somebody want a long preparation for upcoming event. </p>
+     * 
+     * @param
+     * @return void
+     * @throws Exception
+     */
+    void sendMailBefore1Week(User user, Event event) throws Exception;
+
+    /**
+     * send mail with message before 3 days by organizer.
+     * 
+     * <p> This selection is for somebody want a preparation for upcoming event. </p>
+     * 
+     * @param
+     * @return void
+     * @throws Exception
+     */
+    void sendMailBefore3Days(User user, Event event) throws Exception;
+
+    /**
      * send mail with message at specific time by organizer 
      */
     void sendMail(int eid);
 
-    /*
-     * send mail with message before 30 minutes by organizer 
+    /**
+     * send mail with message before 1 hour by organizer 
+     * 
+     * <p> This selection is for somebody who wants to have a short preparation </p>
+     * 
+     * @param
+     * @return void
+     * @throws Exception
      */
     void sendMailBefore1Hour(User user, Event event) throws Exception;
 
@@ -51,8 +72,14 @@ public interface Reminder {
      */
     void sendMailBefore15Min(User user, Event event) throws Exception;
 
-    /*
-     * send mail with message before 10 mintes by organizer
+    /**
+     * send mail with message before 10 mintes by organizer.
+     * 
+     * <p> this selection is for somebody want a short time reminder before certain event. </p>
+     * 
+     * @param
+     * @return void
+     * @throws Exception
      */
     void sendMailBefore10Min(User user, Event event) throws Exception;
 
