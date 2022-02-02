@@ -1,0 +1,107 @@
+package com.example.todo;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class LocalEvent {
+    public String name;
+    public LocalDate date;
+    public String time;
+    public String priority;
+    public int eventID;
+    public String[] participantsList;
+
+    @JsonCreator
+    public LocalEvent( @JsonProperty("name")String eventName,
+                       @JsonProperty("date") String time,
+                       @JsonProperty("eventID")int eventID,
+                       @JsonProperty("organizer") String organizer,
+                       @JsonProperty("priority") String priority,
+                       @JsonProperty("participants list") String[] participantsList
+    )
+    {
+        this.date = Timestamp.valueOf(time).toLocalDateTime().toLocalDate();
+        this.time = time.toString().substring(10,16);
+        this.name = eventName;
+        this.eventID = eventID;
+        this.priority = priority;
+        this.participantsList = participantsList;
+    }
+
+    public LocalEvent(String name, LocalDate date, String time, String priority, String[] participantsList) {
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.priority = priority;
+        this.participantsList = participantsList;
+    }
+
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
+    }
+
+    public int getEventID() {
+        return eventID;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String[] getParticipantsList() {
+        return participantsList;
+    }
+
+    public String getParticipantsString(){
+        String result = "";
+        for(String participant: participantsList){
+            result += participant + ",";
+        }
+        return result;
+    }
+
+    @Override
+    public String toString(){
+        return "At " + this.getTime() + " on " + this.getDate()
+                .format(DateTimeFormatter.ofPattern("MMM-dd-yyyy")) +" : You have " + this.getName().toUpperCase()
+                + " with priority: "+this.getPriority().toUpperCase() + " " + "The participants list includes: "
+                + this.getParticipantsString();
+    }
+}
+
+class CustomInstantDeserializer extends StdDeserializer<Instant> {
+    public CustomInstantDeserializer(Class<?> vc) {
+        super(vc);
+    }
+    public CustomInstantDeserializer(){
+        this(null);
+    }
+    @Override
+    public Instant deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        // TODO Auto-generated method stub
+        String date = jp.getText();
+        return Timestamp.valueOf(date).toInstant();
+    }
+}
