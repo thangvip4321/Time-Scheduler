@@ -203,6 +203,7 @@ public class AddEventController {
         }
         ObjectMapper mapper = new ObjectMapper();
         String json = response.body();
+        System.out.println(json);
         LocalEvent[] events = mapper.readValue(json, LocalEvent[].class);
         for (LocalEvent event : events) {
             list.add(event);

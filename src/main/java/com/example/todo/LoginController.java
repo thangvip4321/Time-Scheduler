@@ -91,6 +91,10 @@ public class LoginController {
             }
             // check for successful login
             if(response.statusCode() == 200){
+                //set token
+                Main.token = response.headers().allValues("token").get(0);
+                System.out.println(Main.token);
+                //
                 showAddEventScreen();
             }
             else{
