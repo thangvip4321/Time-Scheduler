@@ -20,30 +20,45 @@ public class LocalEvent {
     public String priority;
     public int eventID;
     public String[] participantsList;
-
+    public String endTime;
+    public String location;
     @JsonCreator
     public LocalEvent( @JsonProperty("name")String eventName,
-                       @JsonProperty("date") String time,
+                       @JsonProperty("start from") String start,
+                       @JsonProperty("end at") String end,
+                       @JsonProperty("location") String location,
                        @JsonProperty("eventID")int eventID,
                        @JsonProperty("organizer") String organizer,
                        @JsonProperty("priority") String priority,
                        @JsonProperty("participants list") String[] participantsList
     )
     {
-        this.date = Timestamp.valueOf(time).toLocalDateTime().toLocalDate();
-        this.time = time.toString().substring(10,16);
+        this.location = location;
+        this.endTime = end.toString().substring(10,16);
+        this.date = Timestamp.valueOf(start).toLocalDateTime().toLocalDate();
+        this.time = start.toString().substring(10,16);
         this.name = eventName;
         this.eventID = eventID;
         this.priority = priority;
         this.participantsList = participantsList;
     }
 
-    public LocalEvent(String name, LocalDate date, String time, String priority, String[] participantsList) {
+    public LocalEvent(String name, LocalDate date, String time,String endTime, String priority, String[] participantsList, String location) {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.endTime = endTime;
         this.priority = priority;
         this.participantsList = participantsList;
+        this.location = location;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public void setEventID(int eventID) {

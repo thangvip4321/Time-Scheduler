@@ -93,7 +93,6 @@ public class LoginController {
             if(response.statusCode() == 200){
                 //set token
                 Main.token = response.headers().allValues("token").get(0);
-                System.out.println(Main.token);
                 //
                 showAddEventScreen();
             }
@@ -103,7 +102,6 @@ public class LoginController {
                 alert.setContentText("Invalid login");
                 alert.showAndWait();
             }
-            System.out.println(response.body());
         });
     }
 

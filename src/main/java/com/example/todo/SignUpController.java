@@ -146,6 +146,7 @@ public class SignUpController {
     }
 
     private void showLoginScreen(){
+        signUpBtn.getScene().getWindow().hide();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("login.fxml"));
         try{
@@ -157,6 +158,7 @@ public class SignUpController {
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.showAndWait();
+        ///////////////////
     }
 
     private void showSuccessfulMessage(String message){

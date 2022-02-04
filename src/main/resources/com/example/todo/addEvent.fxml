@@ -16,8 +16,11 @@
             <TextField fx:id="eventName" layoutX="220.0" layoutY="19.0" prefHeight="26.0" prefWidth="127.0" promptText="Name of event" />
             <Button fx:id="btnDelete" layoutX="14.0" layoutY="31.0" mnemonicParsing="false" onAction="#removeEvent" prefHeight="16.0" prefWidth="50.0" style="-fx-background-color: white;" text="Delete" />
             <Button fx:id="btnAdd" layoutX="135.0" layoutY="27.0" mnemonicParsing="false" onAction="#addEvent" prefHeight="34.0" prefWidth="62.0" style="-fx-background-color: white;" text="Add" />
-            <ChoiceBox fx:id="priorityPicker" layoutX="581.0" layoutY="20.0" prefHeight="26.0" prefWidth="82.0" />
-            <TextField fx:id="participantsList" layoutX="220.0" layoutY="53.0" prefHeight="26.0" prefWidth="256.0" promptText="participants list" />
+            <ChoiceBox fx:id="priorityPicker" layoutX="599.0" layoutY="53.0" prefHeight="26.0" prefWidth="82.0" />
+            <TextField fx:id="participantsList" layoutX="220.0" layoutY="53.0" prefHeight="26.0" prefWidth="127.0" promptText="participants list" />
+            <ChoiceBox fx:id="reminderPicker" layoutX="502.0" layoutY="53.0" prefHeight="26.0" prefWidth="82.0" />
+            <TextField fx:id="endTimePicker" layoutX="574.0" layoutY="20.0" prefHeight="26.0" prefWidth="50.0" promptText="Time" />
+            <TextField fx:id="locationField" layoutX="375.0" layoutY="53.0" prefHeight="26.0" prefWidth="98.0" promptText="location" />
          </children>
       </AnchorPane>
       <ListView fx:id="myListView" layoutY="94.0" prefHeight="438.0" prefWidth="696.0" />

@@ -25,6 +25,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 
 public class AddEventController {
@@ -35,19 +38,28 @@ public class AddEventController {
     @FXML
     private TextField timePicker;
     @FXML
+    private TextField endTimePicker;
+    @FXML
     private ListView<LocalEvent> myListView;
     @FXML
     private ChoiceBox<String> priorityPicker;
-
+    @FXML
+    private ChoiceBox<String> reminderPicker;
     @FXML
     private TextField participantsList;
+    @FXML
+    private TextField locationField;
+
 
     ObservableList<LocalEvent>list = FXCollections.observableArrayList();
     @FXML
     void initialize() throws JsonProcessingException {
         String priorities[] = {"low", "medium", "high"};
+        String reminders[]= {"1 week","3 days","1 day","1 hour","30 minutes","15 minutes","10 minutes","5 minutes"};
         loadEvent();
         priorityPicker.getItems().addAll(priorities);
+        reminderPicker.getItems().addAll(reminders);
+        reminderPicker.setValue("3 days");
         priorityPicker.setValue("low");
         datePicker.setValue(LocalDate.now());
     }
@@ -124,6 +136,7 @@ public class AddEventController {
         datePicker.setValue(LocalDate.now());
         priorityPicker.setValue("low");
         participantsList.setText("");
+        endTimePicker.setText("");
     }
 
     private void loadColor(){
@@ -158,10 +171,10 @@ public class AddEventController {
 
     public void addEvent(ActionEvent event) throws JsonProcessingException {
             LocalEvent newEvent = new LocalEvent(eventName.getText(), datePicker.getValue(),
-                    timePicker.getText(), priorityPicker.getValue(),
-                    participantsList.getText().split(",",0));
-            System.out.println(participantsList.getText().split(",",0));
-            HttpResponse<String> response =  sendAddHttpRequest(newEvent);
+                    timePicker.getText(),endTimePicker.getText(),priorityPicker.getValue(),
+                    participantsList.getText().split(",",0), locationField.getText());
+            String remindTime = reminderPicker.getValue();
+            HttpResponse<String> response =  sendAddHttpRequest(newEvent,remindTime);
             if(response.statusCode() == 200){
                 setID(newEvent,response.body());
                 list.add(newEvent);
@@ -203,12 +216,10 @@ public class AddEventController {
         }
         ObjectMapper mapper = new ObjectMapper();
         String json = response.body();
-        System.out.println(json);
         LocalEvent[] events = mapper.readValue(json, LocalEvent[].class);
         for (LocalEvent event : events) {
             list.add(event);
         }
-//        System.out.println(list);
         myListView.setItems(list);
         loadColor();
     }
@@ -267,14 +278,23 @@ public class AddEventController {
         return response;
     }
 
-    private HttpResponse<String> sendAddHttpRequest(LocalEvent event) throws JsonProcessingException {
+    private HttpResponse<String> sendAddHttpRequest(LocalEvent event, String remindTime) throws JsonProcessingException {
         //send http POST request
+        String startTime = event.getDate().toString() + "T" + event.getTime()+":00";
+        startTime = LocalDateTime.parse(startTime).toInstant(ZoneOffset.UTC).toString();
+        String finalStartTime = startTime;
+        String endTime = event.getDate().toString() + "T" + event.getEndTime()+":00";
+        endTime = LocalDateTime.parse(endTime).toInstant(ZoneOffset.UTC).toString();
+        String finalEndTime = endTime;
         var values = new HashMap<String, Object>() {{
             put("name", event.getName());
             put("organizer", "duc");
-            put("date", event.getDate().toString() + " " + event.getTime()+":00.0");
+            put("start from", finalStartTime);
+            put("end at",finalEndTime);
             put("priority", event.getPriority());
             put("participants list", event.getParticipantsList());
+            put("remind before", remindTime);
+            put("location", event.getLocation());
         }};
         HttpResponse<String> response = createHttpResponse(values);
         return response;
@@ -290,7 +310,6 @@ public class AddEventController {
 
     private void sendDeleteHttpRequest(int eventID){
         HttpResponse<String> response = createDeleteHttpResponse(eventID);
-        System.out.println(response.body());
         if(response.statusCode() == 200){
             System.out.println("Delete task successfully");
         }
