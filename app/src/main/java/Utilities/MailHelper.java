@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import entities.Event;
 import entities.User;
-import gradle_tish_embedded.App;
+// import gradle_tish_embedded.App;
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
 import jakarta.activation.FileDataSource;
@@ -100,7 +100,6 @@ public class MailHelper {
 			Transport.send(msg);
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
-			System.out.println();
 			Exception ex = mex;
 			do {
 			if (ex instanceof SendFailedException) {

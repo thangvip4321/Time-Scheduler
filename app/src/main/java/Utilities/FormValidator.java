@@ -1,6 +1,6 @@
 package Utilities;
 
-import java.util.regex.Pattern;
+// import java.util.regex.Pattern;
 
 public class FormValidator {
     public static boolean validatePassword(String password){

@@ -38,7 +38,6 @@ import ReminderAPI.Reminder;
 import entities.Event;
 import entities.User;
 import repositories.DataRepository;
-import repositories.PostgreAdapter;
 
 public class QuartzReminder implements Reminder {
 
@@ -63,7 +62,11 @@ public class QuartzReminder implements Reminder {
      */
     private DataRepository repo; // instantiate this at constructor
     
-
+    /**
+     * <p>Constructor</p>
+     * @param repo
+     * @throws Exception
+     */
     public QuartzReminder(DataRepository repo) throws Exception {
         if(repo == null)
             throw new Exception("no reop");
@@ -72,19 +75,27 @@ public class QuartzReminder implements Reminder {
         scheduler.start();
 
     }
+
+    /**
+     * <p>Using for shutting down scheduler</p>
+     * @throws SchedulerException
+     */
     public void shutdown() throws SchedulerException {
         scheduler.shutdown(true);
     }
+
+    /**
+     * <p>Helper function for building the materials for designing the scheduler.</p>
+     * 
+     * @param eid
+     * @param startAt
+     * @throws SchedulerException
+     */
     public void sendNotification(int eid, Instant startAt) throws SchedulerException {
-        //  collect all user that needs to be sent a reminder
+        // collect all user that needs to be sent a reminder
         // only an outline
         scheduler = getScheduler();
 
-        // JobDetail job = JobBuilder.newJob(JobImpl.class).withIdentity(repo.findEventByID(eid).eventName,repo.).
-        // String eventName = repo.findEventByID(eid).eventName;
-        // // Trigger trigger = TriggerBuilder.newTrigger().withIdentity(eveName);
-
-        // User organizerName = repo.findOwnerOfEvent(eid);
         JobDetail jobDetail = buildJobDetail(eid);
         Trigger trigger = buildJobTrigger(jobDetail, startAt);
         scheduler.scheduleJob(jobDetail, trigger);
@@ -104,20 +115,33 @@ public class QuartzReminder implements Reminder {
         // scheduler.shutdown(true);
     }   
 
+    /**
+     * <p>helper function for unscheduling the running event.</p>
+     * 
+     * @param scheduler
+     * @return void
+     * @throws SchedulerException
+     */
     public boolean UnScheduler(Scheduler scheduler) throws SchedulerException {
         return scheduler.unscheduleJob(buildTriggerKey("myTrigger", "myTriggerGroup"));
     }
 
     /**
-     *
+     * <p>Helper function for building the trigger key.</p>
      * 
-     * 
+     * @param myTrigger
+     * @param myTriggerGroup
+     * @return void
      */
     public TriggerKey buildTriggerKey(String myTrigger, String myTriggerGroup) {
         return TriggerKey.triggerKey(myTrigger, myTriggerGroup);
     }
 
     /**
+     * <p>Implemented function on the basis of the job builder and the job data map between the key and assign the value for the job.
+     *      {@link JobDataMap}
+     * </p>
+     * <p>Build the job by mapping the key value from the job to the implemented function.</p>
      * <code>buildJobDetail</code> is used to instantiate {@link JobDetail}s.
      * <p>
      * Use this helper method <code>buildJobDetail</code> to implement 
@@ -133,7 +157,7 @@ public class QuartzReminder implements Reminder {
 	 * @param 
 	 * @return JobDetail <code>{@link JobDetail}</code>.
      */
-    public JobDetail buildJobDetail(int eventID) {
+    private JobDetail buildJobDetail(int eventID) {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(EventReminderJob.COUNT, 1);
         jobDataMap.put(EventReminderJob.EVENTNAME, "vc123");
@@ -194,15 +218,36 @@ public class QuartzReminder implements Reminder {
                 .build();
     }
 
-
+    /**
+     * <p>Helper function for scheduler</p>
+     * 
+     * @return void
+     * @throws SchedulerException
+     */
     public Scheduler getScheduler() throws SchedulerException {
         return schedulerFactory.getScheduler();
     }
 
+    /**
+     * <p>Helper function for counting the number of scheduling event(job) using <code>SchedulerMetaData</code> </p>
+     *
+     * @return an instance of SchedulerMetaData by {@code SchedulerMetaData}
+     * @throws SchedulerException
+     */
     public SchedulerMetaData getSchedulerMetaData() throws SchedulerException {
         return getScheduler().getMetaData();
     }
 
+    /**
+     * <p>Sample builder make the builder of the cron{@code Cron} much more easier</p>
+     * 
+     * <p>Client code can then use the DSL to write code such as this:{@link CronDefinition}</p>
+     * <pre>
+     *      CronDefinition cronDefinition = defineOwnCronDefinition();
+     * </pre>
+     * 
+     * @return cronDefinition sample by simply calling {@code CronDefinition}
+     */
     private static CronDefinition defineOwnCronDefinition() {
         // define your own cron: arbitrary fields are allowed and last field can be optional
         return CronDefinitionBuilder.defineCron().withSeconds().and().withMinutes().and().withHours().and().withDayOfMonth()
@@ -236,6 +281,12 @@ public class QuartzReminder implements Reminder {
         return Instant.now().minus(Duration.ofDays(offsetInDays));
     }
 
+    /**
+     * <p> get current time by putting the region underlying type is {@code String}you want to set the time zone of that place.</p>
+     * 
+     * @param region
+     * @return the date time of the zone, which is the passing argument is region type {@code String}. Also return type is {@link Date}
+     */
     public static ZonedDateTime getCurrentTimeByZoneId(String region) {
         ZoneId zone = ZoneId.of(region);
         ZonedDateTime date = ZonedDateTime.now(zone);
@@ -274,7 +325,17 @@ public class QuartzReminder implements Reminder {
         return zonedDateTime.format(formatter);
     }
 
-    public Cron CronBuilder(Instant starttime) throws Exception {
+    /**
+     * 
+     * <p>Return type {@link Cron}.</p>
+     * <p>Since this must require the Instant instance as the passing argument</p>
+     * <p>This function is made followed the basic constructor builder that {@literal Cron}.</p>
+     * 
+     * @param starttime
+     * @return cron builder sample with the format is UTC is the time zone and also include some basic features that the time of the calendar should have.
+     * @throws Exception
+     */
+    private Cron CronBuilder(Instant starttime) throws Exception {
         
         ZonedDateTime reminder = starttime.atZone(ZoneId.of("UTC"));
         int year = reminder.getYear();
@@ -302,9 +363,7 @@ public class QuartzReminder implements Reminder {
 
         logger.info("preparing to fire alarm for reminding clients");
         Instant schedTime = Instant.from(event.date).minusSeconds(5*60);
-        // Cron cron = CronBuilder(schedTime);
         sendNotification(event.eventID, schedTime);
-        // System.out.println(cron.asString());
 
     }
 

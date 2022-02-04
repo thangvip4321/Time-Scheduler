@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import entities.Event;
 import entities.User;
 import repositories.DataRepository;
-import repositories.PostgreAdapter;
 
 
 public class EventReminderJob implements Job {

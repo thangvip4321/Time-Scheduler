@@ -4,8 +4,8 @@ import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
-// import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.BeforeEach;
 
 
 
@@ -66,7 +66,7 @@ public class ReminderTest {
     @Test
     public void checkSetUp() {
         // assertEquals("2", "2");
-        int a = 2;
+        // int a = 2;
         // User user = mock(User.class);
         // assertEquals(user.email, testUser.email); 
         // assertEquals(user.userID, testUser.userID);
