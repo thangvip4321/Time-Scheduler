@@ -56,7 +56,6 @@ public class EventServlet extends HttpServlet {
         // this is the endpoint for adding event
         User currentUser = (User) req.getAttribute("currentUser");
         Event eventToBeCreated = JsonHelper.extractEvent(req.getReader());
-        logger.
         if(!currentUser.username.equals(eventToBeCreated.organizer)){
             resp.setStatus(400);
             resp.getWriter().write("the user adding the event does not match the event organizer");
