@@ -32,13 +32,15 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  */
 public class Event {
 
-
     private final static String[] predefinedPriority = {"LOW","MEDIUM","HIGH"};
+    private final static String[] predefinedReminddate = {"LOW","MEDIUM","HIGH"};
+
     private final static String jsonEndAt= "end at";
     private final static String jsonStartFrom= "start from";
     private final static String jsonEventName= "name";
     private final static String jsonLocation= "location";
     private final static String jsonParticipantsList= "participants list";
+    private final static String jsonRemindBefore= "remind before";
 
     // We dont need eventID in this class, but there should be one in the database
     // actually we do need eventID to send invite link to user, since none of these attributes are unique
@@ -60,6 +62,8 @@ public class Event {
     public Integer eventID;
     public String priority;
     public String location;
+    @JsonProperty(jsonRemindBefore)
+    public String remindBefore;
         
     
     
@@ -81,6 +85,7 @@ public class Event {
      * Throw an {@link IllegalArgumentException} if priority is anything else. case is not important
      * @param participantsList list of participants in the event. <strong>Reminder: </strong> this participantsList absolutely 
      * does not reflect the actual event list of the event.
+     * 
 
      */
     @JsonCreator
@@ -90,10 +95,10 @@ public class Event {
                  @JsonProperty(jsonStartFrom) Instant startTime,
                  @JsonProperty(jsonEndAt) Instant endTime,
                  @JsonProperty(jsonLocation) String location,
-
                  @JsonProperty("priority") String priority,
-                 @JsonProperty(jsonParticipantsList) List<String> participantsList
-)
+                 @JsonProperty(jsonParticipantsList) List<String> participantsList,
+                 @JsonProperty(jsonRemindBefore) String remindBefore 
+                 )
     {
         this.participantsList = participantsList;
         this.organizer = organizer;
@@ -104,10 +109,29 @@ public class Event {
         if(!Arrays.stream(predefinedPriority).anyMatch(priority::equalsIgnoreCase)){
             throw new IllegalArgumentException("priority type must be LOW,MEDIUM, or HIGH");
         }
+        if(!Arrays.stream(predefinedReminddate).anyMatch(remindBefore::equalsIgnoreCase)){
+            throw new IllegalArgumentException("remind time type must be 1 day,....");
+        }
         this.priority = priority;
+        this.remindBefore = remindBefore;
     }
+
+
+
+    public Event(int eventID,
+    String eventName,
+    String organizer,
+    Instant startTime,
+    Instant endTime,
+    String location,
+    String priority,
+    List<String> participantsList){ 
+        this(eventID, eventName, organizer, startTime, endTime, location, priority, participantsList, null);
+    }
+
+
     public Event(int eventID) {
-        this(eventID,null,null,null,null,null,"LOW",null);
+        this(eventID,null,null,null,null,null,"LOW",null,null);
     }
 }
 

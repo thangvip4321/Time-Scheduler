@@ -23,7 +23,11 @@
   <WatchedResource>WEB-INF/web.xml</WatchedResource>
   <WatchedResource>WEB-INF/tomcat-web.xml</WatchedResource>
   <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
-
+  <!-- why this jar scanner line?, cuz the c3p0 manifest does not link properly to the com.mchange.common library, so just remove the link
+  https://stackoverflow.com/questions/58556243/tomcat-isnt-scanning-jars-within-jars
+  https://stackoverflow.com/questions/49022204/system-cant-find-mchange-commons-java-0-2-11
+  what is manifest in jar -->
+<JarScanner scanManifest="false" />
   <Resource name="jdbc/UserDB" 
       auth="Container" 
       type="javax.sql.DataSource" 

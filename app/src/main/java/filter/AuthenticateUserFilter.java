@@ -2,8 +2,7 @@ package filter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -11,8 +10,12 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import Utilities.JwtHelper;
 import entities.User;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 
 /** 
@@ -23,27 +26,29 @@ import io.jsonwebtoken.security.SignatureException;
  * If you are then they will allow you to go through and reach the servlet.
  * <strong> PS: </strong> this will filter all requests except those reaching /login and /register
  */
-public class AuthenticateFilter extends HttpFilter{
+public class AuthenticateUserFilter extends HttpFilter{
+    Logger logger = LoggerFactory.getLogger(AuthenticateUserFilter.class);
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         String token = request.getHeader("token");
         if(token==null){
-            Logger.getGlobal().log(Level.INFO, "wtf");
+            // logger.info("wtf");
             response.sendRedirect("/login");
             return;
         }
         try {
             Map<String,Object> userIdentifier = new JwtHelper().parseToken(token);
             String username = (String) userIdentifier.get("username");
-            // System.out.println("name: "+username);
-            // System.out.println(userIdentifier.get("userID"));
             int userID = (int) userIdentifier.get("userID");
             request.setAttribute("currentUser", new User(username,userID));
             chain.doFilter(request, response);
         } catch (SignatureException e) {
+            logger.error("The authentication token is not signed by our secret key",token);
             // the token is invalid or the token simply not exist
             response.sendError(403,"it seems like the token is invalid, please login again");
+        } catch (MalformedJwtException e){
+            logger.error("Wrong format on authentication token: {}",token);
         }
 
     }

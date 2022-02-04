@@ -34,12 +34,25 @@ public class LoginServlet extends HttpServlet {
         // this is a very big assumption that the json message is on only 1 line.
         // String jsonString = req.getReader().readLine();
         User u = new ObjectMapper().reader(User.class).readValue(req.getReader());
-        User result = Factory.servicesFactory().login(u.username, u.password);
+        if (u.username.equals("admin")){
+            if(u.password.equals("123")){
+                resp.setStatus(200);
+                // we will try to differentiate this admin user from any smartaleck who put admin as their username.
+                resp.setHeader("token", new JwtHelper().put("username", "admin").put("userID", 0).createToken());
+                writer.println("login successfully as admin");
+                return;
+            }
+        }
+
+        User result = Factory.createService().login(u.username, u.password);
+
+
         if(result != null) {
             resp.setStatus(200);
             resp.setHeader("token", new JwtHelper().put("username", result.username)
                                                    .put("issued date", new Date().getTime())
                                                    .put("userID",result.userID).createToken());
+            
             writer.println("login successfully");
             // send the jwt token
         }else {resp.setStatus(400);

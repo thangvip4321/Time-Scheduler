@@ -12,7 +12,7 @@ public class Factory {
     /** 
      * @return Services
      */
-    public static Services servicesFactory(){
+    public static Services createService(){
         return new Services(new PostgreAdapter());
     }
 }

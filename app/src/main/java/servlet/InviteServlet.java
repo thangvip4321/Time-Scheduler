@@ -28,7 +28,7 @@ public class InviteServlet extends HttpServlet {
         Map<String,Object> invitationDetails =  new JwtHelper().parseToken(token);
         int eventID= (int) invitationDetails.get("eventID");
         String username = (String) invitationDetails.get("username");
-        Factory.servicesFactory().afterAcceptInvitation(new Event(eventID), new User(username));
+        Factory.createService().afterAcceptInvitation(new Event(eventID), new User(username));
         resp.getWriter().println("you have been registered in the event, please reload the app");
     }
 }

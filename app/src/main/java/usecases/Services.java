@@ -16,9 +16,7 @@ import java.lang.IllegalArgumentException;
 import java.time.Instant;
 
 
-// theoretically in the servlet this usecase class should be called.
-// but the logic created here is still too simple so the code in this usecase class
-// will be just like boilerplate code.
+
 /**
     * This {@link Services} class contains all business logic code for this Time Scheduler, from login,register,... to add task,delete task,...
     This code should be changed the least, as changing the code means changing the core logic of our business, thus avoid using any framework-specific 

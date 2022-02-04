@@ -63,7 +63,7 @@ public class RegisterServlet extends HttpServlet {
         // String email = (String) data.get("email");
         // User u = new User(name, email);
 
-        Services allUsecase =Factory.servicesFactory();
+        Services allUsecase =Factory.createService();
         try {
             allUsecase.registerAfterReceivingConfirmationMail(token);
             resp.getWriter().println("thank you now you can close this window");

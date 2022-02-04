@@ -34,7 +34,7 @@ public class EventServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // TODO Auto-generated method stub
         User currentUser = (User) req.getAttribute("currentUser");
-        List<Event> evList = Factory.servicesFactory().checkEventsList(currentUser);
+        List<Event> evList = Factory.createService().checkEventsList(currentUser);
         String body =new ObjectMapper().writeValueAsString(evList);
         resp.setStatus(200);
         resp.setContentType("application/json");
@@ -60,7 +60,7 @@ public class EventServlet extends HttpServlet {
             resp.getWriter().write("the user adding the event does not match the event organizer");
             return;
         }
-        Event e = Factory.servicesFactory().addEvent(eventToBeCreated);
+        Event e = Factory.createService().addEvent(eventToBeCreated);
         JsonHelper.serialize(resp.getWriter(), e);
         resp.setStatus(200);
     }
@@ -76,7 +76,7 @@ public class EventServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = (User) req.getAttribute("currentUser");
         Event eventToBeChanged = JsonHelper.extractEvent(req.getReader());
-        boolean canUpdateEvent =  Factory.servicesFactory().editEvent(eventToBeChanged, currentUser);
+        boolean canUpdateEvent =  Factory.createService().editEvent(eventToBeChanged, currentUser);
         if(!canUpdateEvent){
             resp.getWriter().println("you cannot edit this event");
             return;
@@ -101,7 +101,7 @@ public class EventServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException("the eventID parameter must be an integer");
         }
-        boolean canDeleteEvent = Factory.servicesFactory().deleteEvent(eventID, currentUser);
+        boolean canDeleteEvent = Factory.createService().deleteEvent(eventID, currentUser);
         if(!canDeleteEvent){
             resp.getWriter().println("you cannot delete this event");
         }else{
