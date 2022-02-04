@@ -115,13 +115,11 @@ public class PostgreAdapter implements DataRepository {
         SqlRowSet rs= 
         conn.queryForRowSet("SELECT * FROM events e WHERE e.eid in (SELECT eid FROM userevent where uid=?)",u.userID);
         while (rs.next()) {
-            int eventID = rs.getInt("eid");
             evList.add(createEventFromRowSet(rs));
         }
 
         rs = conn.queryForRowSet("SELECT * FROM events e WHERE organizer=?",u.username);
         while (rs.next()) {
-            int eventID = rs.getInt("eid");
             evList.add(createEventFromRowSet(rs));
         }
         return evList;
@@ -260,7 +258,6 @@ public class PostgreAdapter implements DataRepository {
         SqlRowSet rs= 
         conn.queryForRowSet("SELECT username,email,uid FROM users");
         while (rs.next()) {
-            int eventID = rs.getInt("eid");
             userList.add(new User(rs.getString("username"), rs.getString("email"), rs.getInt("uid")));
         }
         return userList;

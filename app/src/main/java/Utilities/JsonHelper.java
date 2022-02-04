@@ -34,6 +34,11 @@ public class JsonHelper {
      * @throws IOException
      */
     public static Event extractEvent(Reader r) throws JsonProcessingException, IOException {
+        try {
+            
+        } catch (Exception e) {
+            throw new IllegalArgumentException("wrong event format, the format is");
+        }
         return new ObjectMapper().reader(Event.class).readValue(r);
     }
     

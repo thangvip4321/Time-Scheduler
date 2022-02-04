@@ -70,6 +70,14 @@
         <url-pattern>/admin</url-pattern>
     </filter-mapping>
 
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>servlet.AdminServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern>
+    </servlet-mapping>
 
     <filter>
         <filter-name>requestdumper</filter-name>
