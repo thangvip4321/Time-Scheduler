@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.todo.AdminController">
+   <children>
+      <ListView fx:id="adminListView" layoutX="222.0" layoutY="121.0" prefHeight="225.0" prefWidth="242.0" />
+      <AnchorPane layoutX="-9.0" prefHeight="94.0" prefWidth="696.0" style="-fx-background-color: #00bf50;">
+         <children>
+            <Label layoutX="300.0" layoutY="25.0" text="ADMIN" textFill="WHITE">
+               <font>
+                  <Font size="29.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Button fx:id="btnDelete" layoutX="545.0" layoutY="221.0" mnemonicParsing="false" onAction="#removeUser" text="Delete" />
+   </children>
+</AnchorPane>

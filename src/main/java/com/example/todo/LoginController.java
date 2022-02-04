@@ -54,9 +54,6 @@ public class LoginController {
         });
         
         loginBtnLogin.setOnAction(event -> {
-//            // testing without http request
-//            showAddEventScreen();
-//            //
             String username = loginUserName.getText();
             String password = loginPassword.getText();
             //send http POST request
@@ -91,10 +88,19 @@ public class LoginController {
             }
             // check for successful login
             if(response.statusCode() == 200){
+                System.out.println(response.body());
+                if(response.body().equals("login successfully as admin\n")){
+                    System.out.println("1");
+                    Main.token = response.headers().allValues("token").get(0);
+                    showAdminPage();
+                }
                 //set token
-                Main.token = response.headers().allValues("token").get(0);
-                //
-                showAddEventScreen();
+                else if(response.body().equals("login successfully\n")){
+                    System.out.println("2");
+                    Main.token = response.headers().allValues("token").get(0);
+                    showAddEventScreen();
+                }
+
             }
             else{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -103,6 +109,22 @@ public class LoginController {
                 alert.showAndWait();
             }
         });
+    }
+
+    private void showAdminPage(){
+        loginBtnLogin.getScene().getWindow().hide();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("admin.fxml"));
+        try{
+            loader.load();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        Parent root = loader.getRoot();
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.showAndWait();
     }
 
     private void showAddEventScreen(){
