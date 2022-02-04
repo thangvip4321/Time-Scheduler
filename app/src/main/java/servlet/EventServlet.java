@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import Utilities.Factory;
 import Utilities.JsonHelper;
 import entities.Event;
@@ -23,7 +26,7 @@ import entities.User;
 /** this is for all request that heads to the /event endpoints
  */
 public class EventServlet extends HttpServlet {
-    
+    Logger logger = LoggerFactory.getLogger(EventServlet.class);
     /** 
      * @param req
      * @param resp
@@ -53,8 +56,7 @@ public class EventServlet extends HttpServlet {
         // this is the endpoint for adding event
         User currentUser = (User) req.getAttribute("currentUser");
         Event eventToBeCreated = JsonHelper.extractEvent(req.getReader());
-        System.out.println(eventToBeCreated.organizer+","+eventToBeCreated.organizer+",");
-        System.out.println(currentUser.username.equals(eventToBeCreated.organizer));
+        logger.
         if(!currentUser.username.equals(eventToBeCreated.organizer)){
             resp.setStatus(400);
             resp.getWriter().write("the user adding the event does not match the event organizer");

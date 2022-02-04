@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 public class Event {
 
     private final static String[] predefinedPriority = {"LOW","MEDIUM","HIGH"};
-    private final static String[] predefinedReminddate = {"LOW","MEDIUM","HIGH"};
+    private final static String[] predefinedReminddate = {"1 week","3 days","1 day","1 hour","30 minutes","15 minutes","10 minutes","5 minutes"};
 
     private final static String jsonEndAt= "end at";
     private final static String jsonStartFrom= "start from";
@@ -44,25 +44,25 @@ public class Event {
 
     // We dont need eventID in this class, but there should be one in the database
     // actually we do need eventID to send invite link to user, since none of these attributes are unique
-    @JsonProperty(jsonParticipantsList)
+    @JsonProperty(value=jsonParticipantsList,required = true)
     public List<String> participantsList;
 
     public String organizer;
-    @JsonProperty(jsonStartFrom)
+    @JsonProperty(value=jsonStartFrom,required = true)
     @JsonSerialize(using = CustomInstantSerializer.class)
     @JsonDeserialize(using = CustomInstantDeserializer.class)
     public Instant startFrom;
 
-    @JsonProperty(jsonEndAt)
+    @JsonProperty(value=jsonEndAt,required = true)
     @JsonSerialize(using = CustomInstantSerializer.class)
     @JsonDeserialize(using = CustomInstantDeserializer.class)
     public Instant endAt;
-    @JsonProperty(jsonEventName)
+    @JsonProperty(value=jsonEventName, required=true)
     public String eventName;
     public Integer eventID;
     public String priority;
     public String location;
-    @JsonProperty(jsonRemindBefore)
+    @JsonProperty(value=jsonRemindBefore,required= true)
     public String remindBefore;
         
     
@@ -77,27 +77,29 @@ public class Event {
      * @param eventName   Name of the event
      * @param organizer name of the organizer. 
      * @param startFrom the time when the event will start. <strong>Reminder:</strong> when parsing JSON object into this Object, the date must
-     * follow this format <code>YYYY-MM-DD HH:MM:SS.s</code>
+     * follow this format <code>YYYY-MM-DDTHH:MM:SS.sZ</code>
      * @param endAt the time when the event will end. <strong>Reminder:</strong> when parsing JSON object into this Object, the date must
-     * follow this format <code>YYYY-MM-DD HH:MM:SS.s</code>
+     * follow this format <code>YYYY-MM-DDTHH:MM:SS.sZ</code>
      * @param location the location of the event. This can be any string, even a link to a Zoom meeting
      * @param priority priority of the event. Should be 1 these 3 strings: <code>LOW</code>,<code>MEDIUM</code> or <code>HIGH</code>.
      * Throw an {@link IllegalArgumentException} if priority is anything else. case is not important
      * @param participantsList list of participants in the event. <strong>Reminder: </strong> this participantsList absolutely 
      * does not reflect the actual event list of the event.
+    * @param remindBefore a string represent when the user wants to be reminded
      * 
 
      */
     @JsonCreator
+    // we added a lot of required statement here, i wonder if it is correct?
     public Event(@JsonProperty("eventID")int eventID,
-                 @JsonProperty(jsonEventName)String eventName,
+                 @JsonProperty(value=jsonEventName, required=true)String eventName,
                  @JsonProperty("organizer") String organizer,
-                 @JsonProperty(jsonStartFrom) Instant startTime,
-                 @JsonProperty(jsonEndAt) Instant endTime,
+                 @JsonProperty(value= jsonStartFrom,required = true) Instant startTime,
+                 @JsonProperty(value=jsonEndAt,required = true) Instant endTime,
                  @JsonProperty(jsonLocation) String location,
-                 @JsonProperty("priority") String priority,
-                 @JsonProperty(jsonParticipantsList) List<String> participantsList,
-                 @JsonProperty(jsonRemindBefore) String remindBefore 
+                 @JsonProperty(value="priority",required=true) String priority,
+                 @JsonProperty(value=jsonParticipantsList,required = true) List<String> participantsList,
+                 @JsonProperty(value=jsonRemindBefore,required= true) String remindBefore 
                  )
     {
         this.participantsList = participantsList;
@@ -109,6 +111,7 @@ public class Event {
         if(!Arrays.stream(predefinedPriority).anyMatch(priority::equalsIgnoreCase)){
             throw new IllegalArgumentException("priority type must be LOW,MEDIUM, or HIGH");
         }
+        // should it be null?
         if(!Arrays.stream(predefinedReminddate).anyMatch(remindBefore::equalsIgnoreCase)){
             throw new IllegalArgumentException("remind time type must be 1 day,....");
         }
@@ -126,13 +129,21 @@ public class Event {
     String location,
     String priority,
     List<String> participantsList){ 
-        this(eventID, eventName, organizer, startTime, endTime, location, priority, participantsList, null);
+        this(eventID, eventName, organizer, startTime, endTime, location, priority, participantsList, "1 day");
     }
 
-
+    // i have doubt about creating this event entities like this. add too much null will catch other dev
+    // off guard when using our code,e.g they may trigger anything related to startFrom attribute which is null
     public Event(int eventID) {
-        this(eventID,null,null,null,null,null,"LOW",null,null);
+        // this spaghetti code is not tolerated, we should set all to null?
+        this(eventID,null,null,null,null,null,"LOW",null,"1 day");
     }
+
+    // @Override
+    // public String toString(){
+    //     return String.format("event:{ name:%s, id:%d, priority:%s,start from:%s , end at: %s,location: %s,participants: %s", eventName,eventID,startFrom.toString(),endAt.toString()
+    //     ,location,participantsList.toString());
+    // }
 }
 
 class CustomInstantDeserializer extends StdDeserializer<Instant>{
@@ -148,7 +159,6 @@ class CustomInstantDeserializer extends StdDeserializer<Instant>{
     public Instant deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         String date = jp.getText();
         try {
-            // System.out.println(Timestamp.valueOf(date).toInstant());
             return Instant.parse(date);
             // DateTimeFormatter.ISO_INSTANT
         } catch (Exception e) {
