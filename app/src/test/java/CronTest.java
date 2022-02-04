@@ -26,7 +26,9 @@ public class CronTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        System.out.println("lmao");
+
+        MockitoAnnotations.openMocks(this);
         testName = CronFieldName.SECOND;
         when(mockField.getField()).thenReturn(testName);
         fields = Collections.singletonList(mockField);

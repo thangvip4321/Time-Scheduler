@@ -88,4 +88,5 @@ public interface Reminder {
      */
     void sendMailBefore5Min(User user, Event event) throws Exception;
 
+    
 }

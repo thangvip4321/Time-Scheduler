@@ -1,5 +1,7 @@
 package Utilities;
 
+import java.util.InputMismatchException;
+
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -20,16 +22,19 @@ public class EventReminderJob implements Job {
 
     public static final String EVENTNAME = "EVENTNAME";
     public static final String COUNT = "COUNT";
+    public static final String REPO_USED = "REPO";
+    public static final String EVENT_ID = "eventID";
 
     private String flag = "new object";
 
-    private DataRepository repository = new PostgreAdapter();
+    private DataRepository repository;
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
-        Object eventIdObject = context.get("eventID"); //3
 
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+        Object eventIdObject = dataMap.get(EVENT_ID); //3
+        repository = (DataRepository) dataMap.get(REPO_USED);
         //fetch parameters from JobDataMap
 		String eventName = dataMap.getString(EVENTNAME);
         
@@ -44,10 +49,13 @@ public class EventReminderJob implements Job {
         LOGGER.info("send mail to each participant in the event: ");
 
         int eid = ((Number) eventIdObject).intValue();
-        Event e = repository.findEventByID(eid);
-        for(String name : e.participantsList) {
-            User user = repository.findUserByName(name);
-            MailHelper.sendMail("reminder", "Upcomming event! "+ user.username + e.eventName + "excited?", new String[] {user.email});
-        }
+            Event e = repository.findEventByID(eid);
+            if(e == null) throw new InputMismatchException("the eid does not exist");
+            for(String name : e.participantsList) {
+                System.err.println("name is"+name);
+                User user = repository.findUserByName(name);
+                MailHelper.sendMail("reminder", "Upcoming event! "+ user.username + e.eventName + "excited?", new String[] {user.email});
+            }
+
     }
 }

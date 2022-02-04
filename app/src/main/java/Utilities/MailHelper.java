@@ -1,5 +1,7 @@
 package Utilities;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
@@ -24,13 +26,29 @@ public class MailHelper {
 	 * logger announcement in runtime showing process in console window
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(MailHelper.class);
+	private static Properties appProp;
+	static{
+		appProp = new Properties();
+		String fileName = "./src/main/resources/app.properties";
+		try (FileInputStream fis = new FileInputStream(fileName)) {
+			try {
+				appProp.load(fis);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
     // which is the email that i put this app password?
-    static String sender= App.prop.getProperty("email");
-	static String password = App.prop.getProperty("mailPassword");
-	static String hostname= "https://"+App.prop.getProperty("hostname").concat(":").concat(App.prop.getProperty("port"));
+    static String sender= appProp.getProperty("email");
+	static String password = appProp.getProperty("mailPassword");
+	static String hostname= "https://"+appProp.getProperty("hostname").concat(":").concat(appProp.getProperty("port"));
 	static Properties mailProps = new Properties();
-	static String fileName = App.prop.getProperty("/home/ngoc/Documents/java-project/img-event-notification/upcoming-event.png");
+	static String fileName = appProp.getProperty("/home/ngoc/Documents/java-project/img-event-notification/upcoming-event.png");
 
 	// this work
 	static {
@@ -61,7 +79,7 @@ public class MailHelper {
 		});
 
 
-		System.out.println("here" + recipients[0]);
+		// System.out.println("here" + recipients[0]);
 		// could not cast from Object to InternetAddress, be fucking cause the Object type is loaded by the 'bootstrap' classloader
 		// and the Internet address type is loaded by application classloader. But still why cant they be casted?
 		// Class.forname("java.lang.Object") would solve the problem, but it seems ugly, no choices left tho
@@ -141,24 +159,6 @@ public class MailHelper {
 	 * @param body
 	 */
 	public static void sendAttachmentEmail(String subject, String body, String[] recipients){
-		//provide recipient's email ID
-		// String to = "jakartato@example.com";
-
-		// //provide sender's email ID
-		// String from = "jakartafrom@example.com";
-		// //provide Mailtrap's username
-		// final String username = "a094ccae2cfdb3";
-		// //provide Mailtrap's password
-		// final String password = "82a851fcf4aa33";
-  
-		// //provide Mailtrap's host address
-		// String host = "smtp.mailtrap.io";
-		// //configure Mailtrap's SMTP server details
-		// Properties props = new Properties();
-		// props.put("mail.smtp.auth", "true");
-		// props.put("mail.smtp.starttls.enable", "true");
-		// props.put("mail.smtp.host", host);
-		// props.put("mail.smtp.port", "587");
   
 		//create the Session object
 		Session session = Session.getInstance(mailProps, new Authenticator() {
@@ -180,24 +180,31 @@ public class MailHelper {
 			//create a MimeMessage object
 			Message message = new MimeMessage(session);
 		
+			logger.info("-------set sender address to send message---------");
 			//set From email field
 			message.setFrom(new InternetAddress(sender));
 		
+			logger.info("-------set recipients address to send message---------");
 			//set To email field
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(addresses));
 		
+			logger.info("-------set mail subject field---------");
 			//set email subject field
 			message.setSubject("Here comes an attachment!");
 		
+			logger.info("-------instantiate message body part---------");
 			//create the message body part
 			BodyPart messageBodyPart = new MimeBodyPart();
 		
+			logger.info("-------set text to message---------");
 			//set the actual message
-			messageBodyPart.setText("Please find the attachment sent using Jakarta Mail");
+			messageBodyPart.setText("Hello guys, here is an upcoming event");
 		
+			logger.info("-------create an instance of multipart---------");
 			//create an instance of multipart object
 			Multipart multipart = new MimeMultipart();
 		
+			logger.info("-------set message body part for multipart message---------");
 			//set the first text message part
 			multipart.addBodyPart(messageBodyPart);
 		
@@ -247,6 +254,10 @@ public class MailHelper {
 				for (int i = 0; i < validSent.length; i++) 
 					System.out.println("         "+validSent[i]);
 				}
+			}
+			if (ex instanceof IllegalWriteException){
+				IllegalWriteException iwex = (IllegalWriteException)ex;
+				logger.error("Illegal write exception", iwex.toString());
 			}
 			System.out.println();
 			if (ex instanceof MessagingException)

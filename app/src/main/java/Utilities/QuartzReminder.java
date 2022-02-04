@@ -40,7 +40,7 @@ import entities.User;
 import repositories.DataRepository;
 import repositories.PostgreAdapter;
 
-public class JobImpl implements Reminder {
+public class QuartzReminder implements Reminder {
 
     /**
      * Case insensitive Logger constant used to pops up in the console.
@@ -49,21 +49,36 @@ public class JobImpl implements Reminder {
      * {@link org.slf4j.Logger;}
      * 
      * @see Logger
-     * @see JobImpl
+     * @see QuartzReminder
      */
-    private static final Logger logger = LoggerFactory.getLogger(JobImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(QuartzReminder.class);
+    
+    SchedulerFactory schedulerFactory = new StdSchedulerFactory("src/main/resources/quartz.properties");  
+    private Scheduler scheduler;
 
     /**
      * it use {@literal PostgresAdapter} to instantiate on DataRepository which is an interface class
      * 
      * @see DataRepository
      */
-    private DataRepository repo = new PostgreAdapter();
+    private DataRepository repo; // instantiate this at constructor
+    
 
+    public QuartzReminder(DataRepository repo) throws Exception {
+        if(repo == null)
+            throw new Exception("no reop");
+        this.repo = repo;
+        scheduler= schedulerFactory.getScheduler();
+        scheduler.start();
+
+    }
+    public void shutdown() throws SchedulerException {
+        scheduler.shutdown(true);
+    }
     public void sendNotification(int eid, Instant startAt) throws SchedulerException {
         //  collect all user that needs to be sent a reminder
         // only an outline
-        Scheduler scheduler = getScheduler();
+        scheduler = getScheduler();
 
         // JobDetail job = JobBuilder.newJob(JobImpl.class).withIdentity(repo.findEventByID(eid).eventName,repo.).
         // String eventName = repo.findEventByID(eid).eventName;
@@ -73,18 +88,20 @@ public class JobImpl implements Reminder {
         JobDetail jobDetail = buildJobDetail(eid);
         Trigger trigger = buildJobTrigger(jobDetail, startAt);
         scheduler.scheduleJob(jobDetail, trigger);
+        logger.error("job scheduled");
+    
+        // try {
+        //     // run for 292 billion years
+        //     Thread.sleep(Long.MAX_VALUE);
+        //     // executing...
+        // } catch(Exception e) {
+        //     logger.info("Interrupted");
+        //     Thread.currentThread().interrupt();
+        //     e.printStackTrace();
+        // }
+        // logger.info("Sleep finished");
 
-        scheduler.start();
-
-        try {
-            // run for 292 billion years
-            Thread.sleep(Long.MAX_VALUE);
-            // executing...
-        } catch(Exception e) {
-            Thread.currentThread().interrupt();
-        }
-
-        scheduler.shutdown(true);
+        // scheduler.shutdown(true);
     }   
 
     public boolean UnScheduler(Scheduler scheduler) throws SchedulerException {
@@ -117,10 +134,11 @@ public class JobImpl implements Reminder {
 	 * @return JobDetail <code>{@link JobDetail}</code>.
      */
     public JobDetail buildJobDetail(int eventID) {
-
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("abc", 2);
-        jobDataMap.put("eventID", eventID);
+        jobDataMap.put(EventReminderJob.COUNT, 1);
+        jobDataMap.put(EventReminderJob.EVENTNAME, "vc123");
+        jobDataMap.put(EventReminderJob.REPO_USED,repo);
+        jobDataMap.put(EventReminderJob.EVENT_ID, eventID);
 
         return JobBuilder.newJob(EventReminderJob.class)
             .withIdentity(((Integer)eventID).toString())
@@ -178,7 +196,6 @@ public class JobImpl implements Reminder {
 
 
     public Scheduler getScheduler() throws SchedulerException {
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();  
         return schedulerFactory.getScheduler();
     }
 
@@ -285,9 +302,9 @@ public class JobImpl implements Reminder {
 
         logger.info("preparing to fire alarm for reminding clients");
         Instant schedTime = Instant.from(event.date).minusSeconds(5*60);
-        Cron cron = CronBuilder(schedTime);
+        // Cron cron = CronBuilder(schedTime);
         sendNotification(event.eventID, schedTime);
-        System.out.println(cron.asString());
+        // System.out.println(cron.asString());
 
     }
 
@@ -340,7 +357,7 @@ public class JobImpl implements Reminder {
             
             logger.info("----------Initializing-----------");
 
-            Scheduler scheduler = getScheduler();
+            scheduler = getScheduler();
 
             logger.info("----------Initialization Complete-------------");
 
@@ -362,6 +379,7 @@ public class JobImpl implements Reminder {
                 // executing...
             } catch(InterruptedException ex) {
                 Thread.currentThread().interrupt();
+                ex.printStackTrace();
             }
 
             logger.info("--------Shutting down--------------");
@@ -393,4 +411,5 @@ public class JobImpl implements Reminder {
         Instant schedTime = Instant.from(event.date).minus(1, ChronoUnit.WEEKS);
         sendNotification(event.eventID, schedTime);
     }
+
 }

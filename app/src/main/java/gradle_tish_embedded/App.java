@@ -12,6 +12,10 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
+import ReminderAPI.Reminder;
+import Utilities.QuartzReminder;
+import repositories.PostgreAdapter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,7 +23,9 @@ import java.util.Properties;
 
 public class App {
     public static Properties prop;
+    public static Reminder reminder;
     public static void main(String[] args) throws Exception {
+        reminder = new QuartzReminder(new PostgreAdapter());
         easyMain(args);
     }
     public static void easyMain(String[] args)
@@ -27,7 +33,6 @@ public class App {
 
         // initialize scheduler
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        Scheduler scheduler = schedulerFactory.getScheduler();
 
         
         Tomcat tomcat = new Tomcat();
@@ -61,17 +66,7 @@ public class App {
         // by default jndi is disabled in tomcat embedded
         tomcat.enableNaming();
 
-        // set config file for ctx must be done first be4 being registered to the virtual host
-        // the minor difference between addWebapp and addContext is addWebApp also 
-        // include a context.xml and web.xml while addContext doesnt
 
-        // Tomcat.addServlet(ctx, "hello", new HelloServlet());
-        // Tomcat.addServlet(ctx, "userList", new UserListServlet());
-        // ctx.addServletMappingDecoded("/*", "hello");
-        // ctx.addServletMappingDecoded("/list", "userList");
-
-        // A problem when connecting to postgres is that you need to have an 
-        // org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory 
 
         
         tomcat.start();
