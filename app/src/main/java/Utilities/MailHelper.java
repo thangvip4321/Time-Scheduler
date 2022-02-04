@@ -152,12 +152,13 @@ public class MailHelper {
 	}
 
 	/**
+	 * <ul>This function is added and acted like a helper function</ul>
 	 * Utility method to send email with attachment
 	 * @param []recipients
 	 * @param subject
 	 * @param body
 	 */
-	public static void sendAttachmentEmail(String subject, String body, String[] recipients){
+	public static void sendAttachmentEmail(String subject, String body, String[] recipients) {
   
 		//create the Session object
 		Session session = Session.getInstance(mailProps, new Authenticator() {
@@ -261,10 +262,9 @@ public class MailHelper {
 			System.out.println();
 			if (ex instanceof MessagingException)
 				ex = ((MessagingException)ex).getNextException();
-			else
+			else 
 				ex = null;
 			} while (ex != null);
-			throw new RuntimeException(mex);
 		} 
 	}
 

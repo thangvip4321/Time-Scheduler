@@ -90,6 +90,10 @@ dependencies {
     runtimeOnly('io.jsonwebtoken:jjwt-impl:0.11.2')
     runtimeOnly('io.jsonwebtoken:jjwt-jackson:0.11.2')
 
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+
+
     // https://mvnrepository.com/artifact/org.quartz-scheduler/quartz
     implementation 'org.quartz-scheduler:quartz:2.3.2'
 
@@ -176,6 +180,24 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-runner
     testImplementation 'org.junit.platform:junit-platform-runner:1.8.2'
+
+    // https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
+
+//     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+//     implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+// // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
+// implementation 'org.apache.commons:commons-collections4:4.4'
+
+// // https://mvnrepository.com/artifact/org.apache.commons/commons-compress
+// implementation 'org.apache.commons:commons-compress:1.21'
+
+// // https://mvnrepository.com/artifact/org.apache.commons/commons-pool2
+// implementation 'org.apache.commons:commons-pool2:2.11.1'
+
+// https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
+implementation 'commons-beanutils:commons-beanutils:1.9.4'
 
 }
 

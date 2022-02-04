@@ -17,7 +17,8 @@ public class JsonHelper {
         return new ObjectMapper().reader(User.class).readValue(r);
     }
     public static Event extractEvent(Reader r) throws JsonProcessingException, IOException {
-        return new ObjectMapper().reader(Event.class).readValue(r);
+        // return new ObjectMapper().reader(Event.class).readValue(r);
+        return JsonUtil.objectMapper.readerFor(Event.class).readValue(r);
     }
     public static void serialize(Writer w,Object value) throws JsonGenerationException, JsonMappingException, IOException {
         new ObjectMapper().writeValue(w, value);
