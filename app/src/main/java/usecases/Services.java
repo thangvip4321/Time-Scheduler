@@ -16,7 +16,9 @@ import java.lang.IllegalArgumentException;
 import java.time.Instant;
 
 
-
+// theoretically in the servlet this usecase class should be called.
+// but the logic created here is still too simple so the code in this usecase class
+// will be just like boilerplate code.
 /**
     * This {@link Services} class contains all business logic code for this Time Scheduler, from login,register,... to add task,delete task,...
     This code should be changed the least, as changing the code means changing the core logic of our business, thus avoid using any framework-specific 
@@ -32,7 +34,6 @@ public class Services {
         this.repo = repo;
     }
 
-    
     /** 
      * perform check on registration information, to avoid somebody spamming our server with fake account.
      * throw specific exception when the info is not legitimate
@@ -69,7 +70,6 @@ public class Services {
         return true;
         // if user click on the link, send request to /confirm servlet with the key
     }
-
     
     /** this is called after the potential user confirm their registration
      * @param token a JWT token attached to the confirmation link.
@@ -93,7 +93,6 @@ public class Services {
             throw new IllegalArgumentException("the confirm link you sent is invalid");
         }
     }
-
     
     /** this is called to check the validity of user's credential when logging into the system.
      * @param username
@@ -111,7 +110,6 @@ public class Services {
         }
         return u;
     }
-
     
     /** this is called when a user create an event.
      * @param e a fully populated {@link Event} object. All non-existent username in participant list will be ignored.
@@ -155,8 +153,6 @@ public class Services {
         // and let another servlet show it to user.
         return isDeleted;
     }
-
-    
 
         /** this is called when a user delete an event.
      * @param e an Event object which need an eventID

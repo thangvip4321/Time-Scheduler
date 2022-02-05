@@ -6,15 +6,15 @@ import java.util.Properties;
 
 import entities.Event;
 import entities.User;
-import gradle_tish_embedded.App;
+import gradle_tish_embedded.BackendApp;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 
 public class MailHelper {
     // which is the email that i put this app password?
-    static String sender= App.prop.getProperty("email");
-	static String password = App.prop.getProperty("mailPassword");
-	static String hostname= "https://"+App.prop.getProperty("hostname").concat(":").concat(App.prop.getProperty("port"));
+    static String sender= BackendApp.prop.getProperty("email");
+	static String password = BackendApp.prop.getProperty("mailPassword");
+	static String hostname= "https://"+BackendApp.prop.getProperty("hostname").concat(":").concat(BackendApp.prop.getProperty("port"));
 	static Properties mailProps = new Properties();
 
 	// this work
