@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.AbstractMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
@@ -13,7 +12,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import entities.Event;
 import entities.User;
@@ -46,7 +44,7 @@ public class JsonHelper {
      */
     public static User extractUser(Reader r) throws JsonProcessingException, ServletException,IOException {
         try {
-            return new ObjectMapper().reader(User.class).readValue(r);
+            return new ObjectMapper().readerFor(User.class).readValue(r);
         } catch (JsonProcessingException e) {
             throw new ServletException("wrong format for user type, here is an example: "+printMapWithNewLine("", exampleUser));
         }    
@@ -61,7 +59,7 @@ public class JsonHelper {
      */
     public static Event extractEvent(Reader r) throws JsonProcessingException,IOException ,ServletException {
         try {
-            return new ObjectMapper().reader(Event.class).readValue(r);
+            return new ObjectMapper().readerFor(Event.class).readValue(r);
         } catch (JsonProcessingException e) {
             throw new ServletException("wrong format for event type, here is an example: "+printMapWithNewLine("", exampleEvent));
         }

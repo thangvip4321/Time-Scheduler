@@ -1,21 +1,53 @@
 package Utilities;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import entities.Event;
 import entities.User;
-import gradle_tish_embedded.App;
+// import gradle_tish_embedded.App;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
+import lombok.NoArgsConstructor;
 
 public class MailHelper {
+
+	/**
+	 * logger announcement in runtime showing process in console window
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(MailHelper.class);
+	private static Properties appProp;
+	static{
+		appProp = new Properties();
+		String fileName = "./src/main/resources/app.properties";
+		try (FileInputStream fis = new FileInputStream(fileName)) {
+			try {
+				appProp.load(fis);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
     // which is the email that i put this app password?
-    static String sender= App.prop.getProperty("email");
-	static String password = App.prop.getProperty("mailPassword");
-	static String hostname= "https://"+App.prop.getProperty("hostname").concat(":").concat(App.prop.getProperty("port"));
+    static String sender= appProp.getProperty("email");
+	static String password = appProp.getProperty("mailPassword");
+	static String hostname= "https://"+appProp.getProperty("hostname").concat(":").concat(appProp.getProperty("port"));
 	static Properties mailProps = new Properties();
+	static String fileName = appProp.getProperty("/home/ngoc/Documents/java-project/img-event-notification/upcoming-event.png");
 
 	// this work
 	static {
@@ -65,7 +97,6 @@ public class MailHelper {
 			Transport.send(msg);
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
-			System.out.println();
 			Exception ex = mex;
 			do {
 			if (ex instanceof SendFailedException) {

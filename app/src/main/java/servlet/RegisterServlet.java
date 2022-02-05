@@ -1,14 +1,12 @@
 package servlet;
 
 import java.io.PrintWriter;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Utilities.Factory;
@@ -32,7 +30,7 @@ public class RegisterServlet extends HttpServlet {
 
         // this is a very big assumption that the json message is on only 1 line.
         // String jsonString = req.getReader().readLine();
-        User u = new ObjectMapper().reader(User.class).readValue(req.getReader());
+        User u = new ObjectMapper().readerFor(User.class).readValue(req.getReader());
         Services allUsecase =new Services(new PostgreAdapter());
         boolean isCorrect= allUsecase.checkValidRegistration(u.username, u.password, u.email);
         if(isCorrect) {
@@ -68,7 +66,6 @@ public class RegisterServlet extends HttpServlet {
             allUsecase.registerAfterReceivingConfirmationMail(token);
             resp.getWriter().println("thank you now you can close this window");
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

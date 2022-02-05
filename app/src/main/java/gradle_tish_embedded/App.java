@@ -11,6 +11,10 @@ import org.apache.coyote.http11.Http11Nio2Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import reminder.QuartzReminder;
+import reminder.Reminder;
+import repositories.PostgreAdapter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
@@ -19,10 +23,8 @@ import java.util.Properties;
 //  this is the main class, which is responsible for starting Tomcat server
 public class App {
     public static Properties prop;
-    static Logger logger = LoggerFactory.getLogger(App.class);
-    // this will be called when the program start
+    public static Reminder reminder;
     public static void main(String[] args) throws Exception {
-        logger.info("hello there");
         easyMain(args);
     }
     
@@ -39,6 +41,7 @@ public class App {
         prop.load(fis);
         // fix the way we retrieve resource 
         // logger.info("xd {}",Properties.class.getResource("app.properties"));
+ 
 
         int port = Integer.parseInt(prop.getProperty("port"));
         String hostname = App.prop.getProperty("hostname");
@@ -65,17 +68,7 @@ public class App {
         // by default jndi is disabled in tomcat embedded
         tomcat.enableNaming();
 
-        // set config file for ctx must be done first be4 being registered to the virtual host
-        // the minor difference between addWebapp and addContext is addWebApp also 
-        // include a context.xml and web.xml while addContext doesnt
 
-        // Tomcat.addServlet(ctx, "hello", new HelloServlet());
-        // Tomcat.addServlet(ctx, "userList", new UserListServlet());
-        // ctx.addServletMappingDecoded("/*", "hello");
-        // ctx.addServletMappingDecoded("/list", "userList");
-
-        // A problem when connecting to postgres is that you need to have an 
-        // org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory 
 
         
 
