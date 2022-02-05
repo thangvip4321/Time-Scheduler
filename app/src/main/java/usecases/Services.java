@@ -114,8 +114,8 @@ public class Services {
 
     
     /** this is called when a user create an event.
-     * @param e a fully populated {@link Event} object. All non-existent username in participant list will be ignored.
-     * @return {@link Event} a whole event object with eventID for further identification
+     * @param e a fully populated {@link Event} object. All non-existent username in participant list will be ignored.Any field must not be null
+     * @return {@link Event} a whole event object with eventID for further identification.
      * @throws IllegalArgumentException when user set event date in the past.
      */
     public Event addEvent(Event e){
