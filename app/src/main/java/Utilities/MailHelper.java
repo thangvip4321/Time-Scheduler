@@ -11,17 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import entities.Event;
 import entities.User;
-<<<<<<< HEAD
-import gradle_tish_embedded.BackendApp;
-=======
 // import gradle_tish_embedded.App;
-import jakarta.activation.DataHandler;
-import jakarta.activation.DataSource;
-import jakarta.activation.FileDataSource;
->>>>>>> 4aa66fc8371520680a6706428e8a293fd183f1e3
+
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-import lombok.NoArgsConstructor;
 
 public class MailHelper {
 
@@ -47,15 +40,9 @@ public class MailHelper {
 	}
 
     // which is the email that i put this app password?
-<<<<<<< HEAD
-    static String sender= BackendApp.prop.getProperty("email");
-	static String password = BackendApp.prop.getProperty("mailPassword");
-	static String hostname= "https://"+BackendApp.prop.getProperty("hostname").concat(":").concat(BackendApp.prop.getProperty("port"));
-=======
     static String sender= appProp.getProperty("email");
 	static String password = appProp.getProperty("mailPassword");
 	static String hostname= "https://"+appProp.getProperty("hostname").concat(":").concat(appProp.getProperty("port"));
->>>>>>> 4aa66fc8371520680a6706428e8a293fd183f1e3
 	static Properties mailProps = new Properties();
 	static String fileName = appProp.getProperty("/home/ngoc/Documents/java-project/img-event-notification/upcoming-event.png");
 

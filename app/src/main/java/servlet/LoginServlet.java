@@ -13,10 +13,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Utilities.Factory;
+import Utilities.JsonHelper;
 import Utilities.JwtHelper;
 import entities.User;
-import repositories.PostgreAdapter;
-import usecases.Services;
 
 public class LoginServlet extends HttpServlet {
     
@@ -33,7 +32,7 @@ public class LoginServlet extends HttpServlet {
 
         // this is a very big assumption that the json message is on only 1 line.
         // String jsonString = req.getReader().readLine();
-        User u = new ObjectMapper().reader(User.class).readValue(req.getReader());
+        User u = JsonHelper.extractUser(req.getReader());
         if (u.username.equals("admin")){
             if(u.password.equals("123")){
                 resp.setStatus(200);

@@ -123,12 +123,12 @@ dependencies {
     // // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-runner
     // testImplementation 'org.junit.platform:junit-platform-runner:1.8.2'
 
-    // // https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api
-    // implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
+    // https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
 
 
-    // // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
-    // implementation 'commons-beanutils:commons-beanutils:1.9.4'
+    // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
 
 }
 

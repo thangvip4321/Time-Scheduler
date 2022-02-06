@@ -6,6 +6,8 @@ import java.sql.Timestamp;
 
 import javax.naming.NamingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -20,13 +22,14 @@ import java.util.List;
 
 public class PostgreAdapter implements DataRepository {
     private JdbcTemplate conn;
-    
+    Logger logger = LoggerFactory.getLogger(PostgreAdapter.class);
     public PostgreAdapter() {
         try {
             conn = DBHelper.getConnection();
         } catch (NamingException | SQLException e) {
             e.printStackTrace();
         }
+        logger.info("after creating adapter, connection is {}",conn);
     }
 
     
@@ -142,6 +145,7 @@ public class PostgreAdapter implements DataRepository {
      * @return Event
      */
     public Event findEventByID(int eid) {
+        logger.info("id is {}, connection is {}",eid,conn);
         SqlRowSet rs = conn.queryForRowSet("SELECT * FROM events WHERE eid= ?", eid);
         Event e = null;
         while (rs.next()) {
