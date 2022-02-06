@@ -4,11 +4,32 @@
 package gradle_tish_embedded;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+
+import com.cronutils.builder.CronBuilder;
+import com.cronutils.model.Cron;
+import com.cronutils.model.definition.CronDefinition;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+
+import static com.cronutils.model.field.expression.FieldExpressionFactory.*;
 
 class AppTest {
     @Test void appHasAGreeting() {
         BackendApp classUnderTest = new BackendApp();
         // assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    }
+
+    @Test void TestCronExample() {
+        CronDefinition cronDefinition =
+        CronDefinitionBuilder.defineCron()
+        .withSeconds().and()
+        .withMinutes().and()
+        .withHours().and()
+        .withMonth().and()
+        .withYear().optional().and()
+        .instance();
+        Cron cron = CronBuilder.cron(cronDefinition).withYear(on(2020)).withMonth(on(5)).instance();
+        String a = cron.asString();
+        System.out.println(a);
     }
 }

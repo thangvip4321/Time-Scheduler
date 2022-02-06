@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,7 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
+import static gradle_tish_embedded.App.reminder;
 
 /**
  * <p>This is just a placeholder class for storing Event entity when doing business logic code. Thus all properties are set to public.
@@ -138,12 +139,6 @@ public class Event {
         // this spaghetti code is not tolerated, we should set all to null?
         this(eventID,null,null,null,null,null,"LOW",null,"1 day");
     }
-
-    // @Override
-    // public String toString(){
-    //     return String.format("event:{ name:%s, id:%d, priority:%s,start from:%s , end at: %s,location: %s,participants: %s", eventName,eventID,startFrom.toString(),endAt.toString()
-    //     ,location,participantsList.toString());
-    // }
 }
 
 class CustomInstantDeserializer extends StdDeserializer<Instant>{

@@ -72,5 +72,15 @@ public class User {
         this(name,null,id);
     }
 
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User that = (User) o;
+        return username.equals(that.username) &&
+            email.equals(that.email) &&
+            password.equals(that.password) &&
+            eventList.equals(that.eventList) &&
+            userID==that.userID;
+    }
 }

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Utilities.JwtHelper;
-import entities.User;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 
@@ -39,10 +38,10 @@ public class AuthenticateAdminFilter extends HttpFilter{
         }
         try {
             Map<String,Object> userIdentifier = new JwtHelper().parseToken(token);
-            String username = (String) userIdentifier.get("username");
+            // String username = (String) userIdentifier.get("username");
             int userID = (int) userIdentifier.get("userID");
             if(userID !=0)
-            response.sendError(403,"it seems like the token is invalid, please login again");
+            response.sendError(403,"it seems like you are not admin, please login again");
             else
             chain.doFilter(request, response);
         } catch (SignatureException e) {

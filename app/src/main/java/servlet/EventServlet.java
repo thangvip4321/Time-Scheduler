@@ -21,11 +21,23 @@ import Utilities.Factory;
 import Utilities.JsonHelper;
 import entities.Event;
 import entities.User;
-
+import static gradle_tish_embedded.App.reminder;
+import repositories.PostgreAdapter;
+import reminder.QuartzReminder;
 
 /** this is for all request that heads to the /event endpoints
  */
 public class EventServlet extends HttpServlet {
+    // actually i should instantiate reminder in the App, but when i created an initialContext there
+    // i could not find the resource
+    static{
+        try {
+            reminder = new QuartzReminder(new PostgreAdapter());
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
+    }
+
     Logger logger = LoggerFactory.getLogger(EventServlet.class);
     /** 
      * @param req

@@ -2,6 +2,10 @@ package usecases;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import javax.servlet.ServletException;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
@@ -10,15 +14,19 @@ import Utilities.JwtHelper;
 import Utilities.MailHelper;
 import entities.Event;
 import entities.User;
+import static gradle_tish_embedded.App.reminder;
 import io.jsonwebtoken.security.SignatureException;
 import repositories.DataRepository;
 import java.lang.IllegalArgumentException;
 import java.time.Instant;
 
 
+<<<<<<< HEAD
 // theoretically in the servlet this usecase class should be called.
 // but the logic created here is still too simple so the code in this usecase class
 // will be just like boilerplate code.
+=======
+>>>>>>> 4aa66fc8371520680a6706428e8a293fd183f1e3
 /**
     * This {@link Services} class contains all business logic code for this Time Scheduler, from login,register,... to add task,delete task,...
     This code should be changed the least, as changing the code means changing the core logic of our business, thus avoid using any framework-specific 
@@ -112,19 +120,53 @@ public class Services {
     }
     
     /** this is called when a user create an event.
-     * @param e a fully populated {@link Event} object. All non-existent username in participant list will be ignored.
-     * @return {@link Event} a whole event object with eventID for further identification
+     * @param event a fully populated {@link Event} object. All non-existent username in participant list will be ignored.Any field must not be null
+     * @return {@link Event} a whole event object with eventID for further identification.
      * @throws IllegalArgumentException when user set event date in the past.
+     * @throws ServletException
      */
-    public Event addEvent(Event e){
-        if(e.startFrom.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
-        if(e.startFrom.isAfter(e.endAt)){throw new IllegalArgumentException("cannot set event end before event start");}
-
-        e.eventID = repo.addEvent(e);
-        User[] participantList =  e.participantsList.stream().map(participantName -> {
-            return new User(participantName);}).toArray(User[]::new);
-        inviteParticipants(e,participantList);
-        return e;
+    public Event addEvent(Event event) throws IllegalArgumentException, ServletException{
+        if(event.startFrom.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
+        if(event.startFrom.isAfter(event.endAt)){throw new IllegalArgumentException("cannot set event end before event start");}
+        if(!repo.checkIfUsernameExist(event.organizer)){throw new IllegalArgumentException("the organizer did not exist in our database");}
+        var userStream=  event.participantsList.stream().filter(name -> (repo.checkIfUsernameExist(name)));
+        event.eventID = repo.addEvent(event);
+        // add reminder job to the scheduler
+        try {
+            switch (event.remindBefore) {
+                case "1 week":
+                    reminder.sendMailBefore1Week(event);
+                    break;
+                case "3 days":
+                    reminder.sendMailBefore3Days(event);
+                    break;
+                case "1 day":
+                    break;
+                case "1 hour":
+                    reminder.sendMailBefore1Hour(event);
+                    break;
+                case "30 minutes":
+                    reminder.sendMailBefore30Min(event);
+                    break;
+                case "15 minutes":
+                    reminder.sendMailBefore15Min(event);
+                    break;
+                case "10 minutes":
+                    reminder.sendMailBefore10Min(event);
+                    break;
+                case "5 minutes":
+                    reminder.sendMailBefore5Min(event);
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
+            throw new ServletException("reminder cannot store the schedule");
+        }
+        
+        event.participantsList = userStream.collect(Collectors.toList());
+        inviteParticipants(event);
+        return event;
     }
     
     /** this is called when a user delete an event.
@@ -139,6 +181,7 @@ public class Services {
      */
     public boolean deleteEvent(int eid,User requester){
         boolean isDeleted = false;
+        // delete job in the scheduler
         Event ev = repo.findEventByID(eid);
         if(ev==null) return false;
         User u = repo.findOwnerOfEvent(eid);
@@ -167,6 +210,7 @@ public class Services {
     public boolean editEvent(Event e,User requester){
         if(e.startFrom.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
         if(e.startFrom.isAfter(e.endAt)){throw new IllegalArgumentException("cannot set event end before event start");}
+        // edit event in the scheduler
         boolean isUpdated = false;
         System.out.println(e.eventID);
         Event ev = repo.findEventByID(e.eventID);
@@ -191,13 +235,13 @@ public class Services {
         return repo.findEventsFromUser(u);
     }
     
-    /** a function to invite other participant to an event
+    /** a function to invite other participants to an event
      * @param e an Event object
      * @param participants  a list of User object which only requires name
      */
-    public void inviteParticipants(Event e,User[] participants){
-        for (User user : participants) {
-            user = repo.findUserByName(user.username);
+    public void inviteParticipants(Event e){
+        for (String username : e.participantsList) {
+            User user = repo.findUserByName(username);
             if(user== null) return;
             MailHelper.sendInvitationMail(e,user);
         }
