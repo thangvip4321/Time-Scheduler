@@ -125,7 +125,7 @@ public class Services {
     public Event addEvent(Event event) throws IllegalArgumentException, ServletException{
         if(event.startFrom.isBefore(Instant.now())){throw new IllegalArgumentException("cannot set event date in the past");}
         if(event.startFrom.isAfter(event.endAt)){throw new IllegalArgumentException("cannot set event end before event start");}
-        if(!repo.checkIfUsernameExist(event.organizer)){throw new IllegalArgumentException("the organizer did not exist in our database");}
+        // if(!repo.checkIfUsernameExist(event.organizer)){throw new IllegalArgumentException("the organizer did not exist in our database");}
         var userStream=  event.participantsList.stream().filter(name -> (repo.checkIfUsernameExist(name)));
         event.eventID = repo.addEvent(event);
         // add reminder job to the scheduler

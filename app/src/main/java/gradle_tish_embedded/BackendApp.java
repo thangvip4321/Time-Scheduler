@@ -10,7 +10,6 @@ import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.http11.Http11Nio2Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
