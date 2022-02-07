@@ -12,6 +12,8 @@ plugins {
 }
 configurations {
     implementation
+    jaxDoclet
+    Xdoclint:none
 }
 
 repositories {
@@ -130,12 +132,27 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
 
+    // https://mvnrepository.com/artifact/org.apache.avro/avro
+    implementation 'org.apache.avro:avro:1.11.0'
+
 }
 
 application {
     // Define the main class for the application.
     mainClass = 'gradle_tish_embedded.App'
 
+}
+
+// dependencies {
+//   //jaxDoclet "some.interesting:Dependency:1.0"
+// }
+
+task generateRestApiDocs(type: Javadoc) {
+  source = sourceSets.main.allJava
+  destinationDir = reporting.file("rest-api-docs")
+  options.docletpath = configurations.jaxDoclet.files.asType(List)
+  options.doclet = "com.lunatech.doclets.jax.jaxrs.JAXRSDoclet"
+  options.addStringOption("jaxrscontext", "http://localhost:8080/myapp")
 }
 
 import java.lang.reflect.*;
