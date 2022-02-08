@@ -1,6 +1,7 @@
 package com.example.todo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,6 +14,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@JsonIgnoreProperties(value = {"remind before"})
 public class LocalEvent {
     public String name;
     public LocalDate date;
@@ -34,9 +36,9 @@ public class LocalEvent {
     )
     {
         this.location = location;
-        this.endTime = end.toString().substring(10,16);
-        this.date = Timestamp.valueOf(start).toLocalDateTime().toLocalDate();
-        this.time = start.toString().substring(10,16);
+        this.endTime = Instant.parse(end).atZone(ZoneId.systemDefault()).toLocalTime().toString();
+        this.date = Instant.parse(start).atZone(ZoneId.systemDefault()).toLocalDate();
+        this.time = Instant.parse(start).atZone(ZoneId.systemDefault()).toLocalTime().toString();
         this.name = eventName;
         this.eventID = eventID;
         this.priority = priority;
@@ -102,7 +104,7 @@ public class LocalEvent {
         return "At " + this.getTime() + " on " + this.getDate()
                 .format(DateTimeFormatter.ofPattern("MMM-dd-yyyy")) +" : You have " + this.getName().toUpperCase()
                 + " with priority: "+this.getPriority().toUpperCase() + " " + "The participants list includes: "
-                + this.getParticipantsString();
+                + this.getParticipantsString() + "The event starts at: " + this.getTime() + " and ends at: " + this.getEndTime();
     }
 }
 

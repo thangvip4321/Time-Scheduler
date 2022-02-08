@@ -8,13 +8,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AddEventController {
     @FXML
@@ -48,11 +54,13 @@ public class AddEventController {
     private TextField participantsList;
     @FXML
     private TextField locationField;
+    FileChooser fileChooser = new FileChooser();
 
 
     ObservableList<LocalEvent>list = FXCollections.observableArrayList();
     @FXML
     void initialize() throws JsonProcessingException {
+        fileChooser.setInitialDirectory(new File("D:"));
         String priorities[] = {"low", "medium", "high"};
         String reminders[]= {"1 week","3 days","1 day","1 hour","30 minutes","15 minutes","10 minutes","5 minutes"};
         loadEvent();
@@ -312,5 +320,25 @@ public class AddEventController {
         if(response.statusCode() == 200){
             System.out.println("Delete task successfully");
         }
+    }
+
+    public void exportEvent(ActionEvent event){
+        File file = fileChooser.showSaveDialog(new Stage());
+        String joined = myListView.getItems().stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", \n"));
+        if(file != null){
+            saveSystem(file, joined);
+        }
+    }
+    public void saveSystem(File file, String content){
+        try {
+            PrintWriter printWriter = new PrintWriter(file);
+            printWriter.write(content);
+            printWriter.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 }
