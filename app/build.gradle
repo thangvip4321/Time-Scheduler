@@ -13,7 +13,7 @@ plugins {
 configurations {
     implementation
     jaxDoclet
-    Xdoclint:none
+    //Xdoclint:none
 }
 
 repositories {
@@ -132,8 +132,8 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
 
-    // https://mvnrepository.com/artifact/org.apache.avro/avro
-    implementation 'org.apache.avro:avro:1.11.0'
+    // // https://mvnrepository.com/artifact/org.apache.avro/avro
+    // implementation 'org.apache.avro:avro:1.11.0'
 
 }
 

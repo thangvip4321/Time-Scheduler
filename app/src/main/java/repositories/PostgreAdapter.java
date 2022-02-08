@@ -91,7 +91,7 @@ public class PostgreAdapter implements DataRepository {
     public boolean deleteEvent(int eventID) {
         // TODO Auto-generated method stub
         conn.update("Delete from userevent where eid=?",eventID);
-        delete  from a where  eid =1 OR TRUE;
+        //delete  from a where  eid =1 OR TRUE;
         conn.update("Delete from events where eid=?",eventID);
         return true;
     }
