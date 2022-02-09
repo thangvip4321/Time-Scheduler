@@ -23,7 +23,10 @@ import io.jsonwebtoken.security.SignatureException;
  * This filter will check for your JWT Token to check if you are actually logged in or not.
  * 
  * If you are then they will allow you to go through and reach the servlet.
- * <strong> PS: </strong> this will filter all requests except those reaching /login and /register
+ * <p>
+ * <strong> PS: </strong> this will filter all requests going to /admin
+ *  </p>
+ * @author Nguyen Duc Thang
  */
 public class AuthenticateAdminFilter extends HttpFilter{
     Logger logger = LoggerFactory.getLogger(AuthenticateAdminFilter.class);

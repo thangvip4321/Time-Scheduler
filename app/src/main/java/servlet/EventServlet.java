@@ -25,7 +25,9 @@ import static gradle_tish_embedded.App.reminder;
 import repositories.PostgreAdapter;
 import reminder.QuartzReminder;
 
-/** this is for all request that heads to the /event endpoints
+/** the {@code EventServlet} class handles all request that heads to the /event endpoints
+ *  
+ * @author Nguyen Duc Thang
  */
 public class EventServlet extends HttpServlet {
     // actually i should instantiate reminder in the App, but when i created an initialContext there

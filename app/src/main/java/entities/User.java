@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p> This class behaves similarly to a struct in C. The purpose of this class is just for other outside functions to change its state, that's all.
  * No methods, only attributes!
  * @see entities.Event
+ * @author Nguyen Duc Thang
  */
 public class User {
     public String username;

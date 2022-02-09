@@ -13,6 +13,10 @@ import Utilities.JwtHelper;
 import entities.Event;
 import entities.User;
 
+/** the {@code EventServlet} class handles all request that heads to the /invite endpoint. Specifically,
+ * when the user click on the invite link sent via email
+  * @author Nguyen Duc Thang
+ */
 public class InviteServlet extends HttpServlet {
     
     /** 

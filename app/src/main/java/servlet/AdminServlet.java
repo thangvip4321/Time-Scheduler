@@ -14,8 +14,9 @@ import entities.User;
 
 
 
-
-// this is mostly for admin to administrate the users, too lazy to do this
+/** the {@code EventServlet} class handles all request that heads to the /admin endpoints
+  * @author Nguyen Duc Thang
+ */
 public class AdminServlet extends HttpServlet {
     
     /** 

@@ -1,8 +1,5 @@
 package reminder;
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import entities.Event;
 import entities.User;
@@ -11,18 +8,13 @@ import entities.User;
  * Convenient for using or implementing the code with interface class
  * 
  * <p>
- * Reminder does not store an actual instance of <code>JobImpl</code> class, but
+ * Reminder does not store an actual instance of <code>QuartzReminder</code> class, but
  * instead allows you to define an instance of one, through the use of a <code>Reminder</code>.
  * </p>
  * 
  * <p>
- * <code>JobImpl</code> have implemented this interface<code>{@link Reminder}</code>
+ * <code>QuartzReminder</code> have implemented this interface<code>{@link Reminder}</code>
  *  for the convenience.
- * </p>
- * 
- * <p>
- *  Usually the {@link Event} and {@link User} from {@link repositories.PostgreAdapter} can be used to call the utility functions from 
- *  this {@code reminder} package instead of {@link Event} and {@link User} from {@code entities} package.
  * </p>
  * 
  * @see Event

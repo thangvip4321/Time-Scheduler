@@ -30,6 +30,7 @@ import static gradle_tish_embedded.App.reminder;
  * <p> This class behaves similarly to a struct in C. The purpose of this class is just for other outside functions to change its state, that's all.
  * No methods, only attributes!
  * @see entities.User
+ * @author Nguyen Duc Thang
  */
 public class Event {
 

@@ -8,12 +8,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.Http11Nio2Protocol;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import reminder.QuartzReminder;
 import reminder.Reminder;
-import repositories.PostgreAdapter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,8 +35,8 @@ public class App {
         String fileName = "./src/main/resources/app.properties";
         FileInputStream fis = new FileInputStream(fileName);
         prop.load(fis);
-        // fix the way we retrieve resource 
-        // logger.info("xd {}",Properties.class.getResource("app.properties"));
+        // TODO: fix the way we retrieve resource 
+  
  
 
         int port = Integer.parseInt(prop.getProperty("port"));

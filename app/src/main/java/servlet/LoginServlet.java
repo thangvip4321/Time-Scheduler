@@ -17,6 +17,9 @@ import Utilities.JsonHelper;
 import Utilities.JwtHelper;
 import entities.User;
 
+/** the {@code LoginServlet} class handles all request that heads to the /login endpoint. 
+  * @author Nguyen Duc Thang
+ */
 public class LoginServlet extends HttpServlet {
     
     /** 
@@ -68,7 +71,7 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException
      */
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // should be a server side rendering here but wtf am i doing
+        // should be a server side rendering here but what am i doing
         resp.setStatus(200);
         resp.getWriter().println("please log in");
     }

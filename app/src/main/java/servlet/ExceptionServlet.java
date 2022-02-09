@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/** the {@code ExceptionServlet} class actually will be shown whenever there is some kind of Exceptions happen in other Servlet.
+ * Instead of printing an ugly stack trace to the client, it will summarize and send a formatted message.
+  * @author Nguyen Duc Thang
+ */
 public class ExceptionServlet extends HttpServlet{
 
 	protected void doGet(HttpServletRequest request,

@@ -14,6 +14,10 @@ import entities.User;
 import io.jsonwebtoken.io.IOException;
 import repositories.PostgreAdapter;
 import usecases.Services;
+
+/** the {@code RegisterServlet} class handles all request that heads to the /register endpoint.
+  * @author Nguyen Duc Thang
+ */
 public class RegisterServlet extends HttpServlet {
     
     /** 
@@ -35,8 +39,7 @@ public class RegisterServlet extends HttpServlet {
         boolean isCorrect= allUsecase.checkValidRegistration(u.username, u.password, u.email);
         if(isCorrect) {
             resp.setStatus(200);
-            // resp.setHeader("token", new JwtHelper().put("username", u.name).put("issued date", new Date().getTime()).createToken());
-            writer.println("check your mail pls");
+            writer.println("please check your mail");
             // send the jwt token
         }else {resp.setStatus(403);
             writer.println("email invalid or password is not strong, please try again");
@@ -56,11 +59,6 @@ public class RegisterServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, java.io.IOException{
         String token = req.getParameter("token");
-        // Map<String,Object> data = new JwtHelper().parseToken(token); 
-        // String name = (String) data.get("username");
-        // String email = (String) data.get("email");
-        // User u = new User(name, email);
-
         Services allUsecase =Factory.createService();
         try {
             allUsecase.registerAfterReceivingConfirmationMail(token);

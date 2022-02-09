@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This <code>PostgreAdapter</code> class is an implementation of {@link DataRepository}. 
+ * @author Nguyen Duc Thang
+ */
 public class PostgreAdapter implements DataRepository {
     private JdbcTemplate conn;
     Logger logger = LoggerFactory.getLogger(PostgreAdapter.class);
