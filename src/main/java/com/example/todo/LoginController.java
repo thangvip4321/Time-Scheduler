@@ -91,11 +91,13 @@ public class LoginController {
                 System.out.println(response.body());
                 if(response.body().equals("login successfully as admin\n")){
                     Main.token = response.headers().allValues("token").get(0);
+                    Main.username=username;
                     showAdminPage();
                 }
                 //set token
                 else if(response.body().equals("login successfully\n")){
                     Main.token = response.headers().allValues("token").get(0);
+                    Main.username=username;
                     showAddEventScreen();
                 }
 

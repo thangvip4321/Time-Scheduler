@@ -135,7 +135,6 @@ public class SignUpController {
             assert sslContext != null;
             sslContext.init(null, trustAllCerts, new SecureRandom());
         } catch (KeyManagementException e) {
-//            throw new Exception("qwe");
             e.printStackTrace();
         }
         //send request
@@ -157,7 +156,7 @@ public class SignUpController {
         Parent root = loader.getRoot();
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
-        stage.showAndWait();
+        stage.show();
         ///////////////////
     }
 

@@ -9,6 +9,7 @@ import java.io.IOException;
 
 public class Main extends Application {
     public static String token;
+    public static String username;
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("login.fxml"));
