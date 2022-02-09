@@ -20,7 +20,9 @@ import entities.User;
 public class LoginServlet extends HttpServlet {
     
     /** 
-     * @param req
+     * @param req an {@code HttpServletRequest} object that
+     *                  contains the request the client has made
+     *                  of the servlet
      * @param resp
      * @throws ServletException
      * @throws JsonProcessingException

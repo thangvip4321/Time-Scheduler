@@ -19,7 +19,7 @@ import entities.User;
 public class AdminServlet extends HttpServlet {
     
     /** 
-     * @param req
+     * @param req a {@link HttpServletRequest}
      * @param resp
      * @throws ServletException
      * @throws IOException

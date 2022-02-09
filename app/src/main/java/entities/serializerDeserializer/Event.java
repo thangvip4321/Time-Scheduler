@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * <u>This is the link of the code</u>
  * https://stackoverflow.com/questions/45662820/how-to-set-format-of-string-for-java-time-instant-using-objectmapper
  * </p>
+ * 
+ * @author Nguyen Tuan Ngoc
  */
 public class Event {
     // We dont need eventID in this class, but there should be one in the database

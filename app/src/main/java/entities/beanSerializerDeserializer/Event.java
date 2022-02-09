@@ -31,6 +31,8 @@ import org.apache.commons.beanutils.converters.SqlTimestampConverter;
  * <input>
  *      ref=https://stackoverflow.com/questions/7161638/how-do-i-use-a-custom-serializer-with-jackson
  * </input>
+ * 
+ * @author Nguyen Tuan Ngoc
  */
 public class Event {
     // We dont need eventID in this class, but there should be one in the database

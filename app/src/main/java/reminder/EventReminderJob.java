@@ -15,20 +15,51 @@ import entities.Event;
 import entities.User;
 import repositories.DataRepository;
 
-
+/**
+ * This class is the materials for building the {@code QuartzReminder} class.
+ * 
+ * <ul>
+ *  The field of the class is used for comparing the key of this field with the key of {@link QueartzReminder}
+ *   <u>
+ *      We can also use this class for helping us to know what this method {@code execute} for.
+ *  </u>
+ * </ul>
+ * 
+ * @see reminder.EventReminderJob.execute
+ * @see reminder.QuartzReminder.buildJobDetail
+ * 
+ * @author Nguyen Tuan Ngoc
+ */
 public class EventReminderJob implements Job {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(EventReminderJob.class);
 
+    /**
+     * <p> This fields is instantiated to work as a mapping key for {@code JobBuilder} </p>
+     */
     public static final String EVENTNAME = "EVENTNAME";
     public static final String COUNT = "COUNT";
     public static final String REPO_USED = "REPO";
     public static final String EVENT_ID = "eventID";
 
+    /**
+     * This is a special flag indicate to be marked as {@value String}
+     */
     private String flag = "new object";
 
+    /**
+     * This simply utilize some helper functions from the {@link DataRepository}
+     */
     private DataRepository repository;
 
+    /**
+     * <p>
+     *  This function works like a mark to map the same key of the {@code JobDataMap} if they are the same keys.
+     *  Otherwise {@link buildJobDetail} won't build/create the event. Since the user who triggers the event is
+     *  not the same one, so the event job can not be created through the wrong key set.
+     * </p>
+     * 
+     */
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
 

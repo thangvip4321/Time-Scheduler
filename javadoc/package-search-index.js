@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"entities"},{"l":"entities.beanSerializerDeserializer"},{"l":"entities.serializerDeserializer"},{"l":"filter"},{"l":"gradle_tish_embedded"},{"l":"reminder"},{"l":"repositories"},{"l":"servlet"},{"l":"usecases"},{"l":"Utilities"}];updateSearchResults();

@@ -20,6 +20,11 @@ import entities.User;
  *  for the convenience.
  * </p>
  * 
+ * <p>
+ *  Usually the {@link Event} and {@link User} from {@link repositories.PostgreAdapter} can be used to call the utility functions from 
+ *  this {@code reminder} package instead of {@link Event} and {@link User} from {@code entities} package.
+ * </p>
+ * 
  * @see Event
  * @see User
  * @see #sendMail(int)
@@ -66,12 +71,14 @@ public interface Reminder {
      */
     void sendMailBefore1Hour( Event event) throws Exception;
 
-    /*
+    /**
      * send mail with message before 30 minutes by organizer 
+     * 
+     * 
      */
     void sendMailBefore30Min( Event event) throws Exception;
 
-    /*
+    /**
      * send mail with message before 15 minutes by organizer 
      */
     void sendMailBefore15Min( Event event) throws Exception;
@@ -87,7 +94,7 @@ public interface Reminder {
      */
     void sendMailBefore10Min( Event event) throws Exception;
 
-    /* 
+    /**
      * send mail with message before 5 minutes by organizer
      */
     void sendMailBefore5Min( Event event) throws Exception;

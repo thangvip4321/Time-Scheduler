@@ -50,6 +50,8 @@ public class QuartzReminder implements Reminder {
      * 
      * @see Logger
      * @see QuartzReminder
+     * 
+     * @author Nguyen Tuan Ngoc
      */
     private static final Logger logger = LoggerFactory.getLogger(QuartzReminder.class);
     
@@ -138,6 +140,8 @@ public class QuartzReminder implements Reminder {
      * <code>{@link org.quartz.JobBuilder}</code>.
      * </p>
      * 
+     * @see EventReminderJob
+     * 
      * <p>
      * Return the description given to the <code>JobDetail</code> instance by its
      * creator (if any).
@@ -194,7 +198,7 @@ public class QuartzReminder implements Reminder {
      * 
      * @see JobDetail <code>{@link JobDetail}</code>.
      * @see Cron <code>{@link com.cronutils.model.Cron}</code>.
-     * @return Trigger <code>{@link Trigger}</code>.
+     * @return Trigger <code>{@link Trigger}</code>. 
      */
     private Trigger buildJobTrigger(JobDetail jobDetail, Cron cron) {
         return TriggerBuilder.newTrigger()
@@ -280,6 +284,22 @@ public class QuartzReminder implements Reminder {
         return date;
     }
 
+    /**
+     * <p>
+     *  This help you to reduce the boilerplate code when calling each time you want to change the time zone
+     * </p>
+     * 
+     * <p>
+     *  This is demonstration code for the api client 
+     * </p>
+     * 
+     * <pre>
+     *     ZoneDateTime dateAndTimeInSydney = convertZonedDateTime("London/UK","Australia/Sydney");
+     * </pre>
+     * @param sourceDate
+     * @param destZone
+     * @return ZonedDateTime 
+     */
     public ZonedDateTime convertZonedDateTime(ZonedDateTime sourceDate, String destZone) {
 
         ZoneId destZoneId = ZoneId.of(destZone);
