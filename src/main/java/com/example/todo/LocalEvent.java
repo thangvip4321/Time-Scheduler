@@ -104,7 +104,7 @@ public class LocalEvent {
         return "At " + this.getTime() + " on " + this.getDate()
                 .format(DateTimeFormatter.ofPattern("MMM-dd-yyyy")) +" : You have " + this.getName().toUpperCase()
                 + " with priority: "+this.getPriority().toUpperCase() + " " + "The participants list includes: "
-                + this.getParticipantsString() + "The event starts at: " + this.getTime() + " and ends at: " + this.getEndTime();
+                + this.getParticipantsString() + "\nThe event starts at: " + this.getTime() + " and ends at: " + this.getEndTime();
     }
 }
 

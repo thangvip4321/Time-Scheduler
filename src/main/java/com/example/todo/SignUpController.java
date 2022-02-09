@@ -44,6 +44,9 @@ public class SignUpController {
         });
     }
     private void createUser() throws Exception {
+//        //testing without send request
+//        showSuccessfulMessage(" ");
+
         String email = signUpEmail.getText();
         String userName = signUpUserName.getText();
         String password = signUpPassword.getText();
@@ -145,7 +148,6 @@ public class SignUpController {
     }
 
     private void showLoginScreen(){
-        signUpBtn.getScene().getWindow().hide();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("login.fxml"));
         try{
@@ -164,9 +166,10 @@ public class SignUpController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("alert");
         alert.setHeaderText(message);
-        alert.setContentText("succesfully sign up");
+        alert.setContentText("Please close the window and re-run the application");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
+            signUpBtn.getScene().getWindow().hide();
             showLoginScreen();
         }
     }
