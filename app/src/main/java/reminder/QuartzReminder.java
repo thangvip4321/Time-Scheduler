@@ -39,6 +39,14 @@ import entities.Event;
 import entities.User;
 import repositories.DataRepository;
 
+
+/**
+     *  {@code QuartzReminder} is an implementation of {@code Reminder} interface
+     * 
+     * @see Reminder
+     * 
+     * @author Nguyen Tuan Ngoc
+     */
 public class QuartzReminder implements Reminder {
     public BiFunction<User,Event,Void>[] sendMailType;
 

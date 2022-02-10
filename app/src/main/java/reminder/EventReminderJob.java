@@ -16,30 +16,35 @@ import entities.User;
 import repositories.DataRepository;
 
 /**
- * This class is the materials for building the {@code QuartzReminder} class.
- * 
- * <ul>
- *  The field of the class is used for comparing the key of this field with the key of {@link QueartzReminder}
- *   <u>
- *      We can also use this class for helping us to know what this method {@code execute} for.
- *  </u>
- * </ul>
- * 
+ * This class is responsible for reminding participants when the event is near.
+ * Note: 
+
  * @see reminder.EventReminderJob.execute
  * @see reminder.QuartzReminder.buildJobDetail
  * 
- * @author Nguyen Tuan Ngoc
+ * @author Nguyen Tuan Ngoc, Nguyen Duc Thang
  */
+
 public class EventReminderJob implements Job {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(EventReminderJob.class);
 
+    
+    public static final String EVENTNAME = "EVENTNAME";
+
     /**
      * <p> This fields is instantiated to work as a mapping key for {@code JobBuilder} </p>
      */
-    public static final String EVENTNAME = "EVENTNAME";
     public static final String COUNT = "COUNT";
+
+    /**
+     * <p> This fields is instantiated to work as a mapping key for {@code JobBuilder} </p>
+     */
     public static final String REPO_USED = "REPO";
+
+    /**
+     * <p> This fields is instantiated to work as a mapping key for {@code JobBuilder} </p>
+     */
     public static final String EVENT_ID = "eventID";
 
     /**
@@ -52,13 +57,13 @@ public class EventReminderJob implements Job {
      */
     private DataRepository repository;
 
-    /**
+    /**The {@code execute} function is called when the corresponding {@code Trigger} fire, which means there is 5 minutes until
+     * the event start, for example.
      * <p>
-     *  This function works like a mark to map the same key of the {@code JobDataMap} if they are the same keys.
-     *  Otherwise {@link buildJobDetail} won't build/create the event. Since the user who triggers the event is
-     *  not the same one, so the event job can not be created through the wrong key set.
+     *   This function will interact with {@code DataRepository} to retrieve
+     * events and participants, hence it needs several value in the {@code JobDataMap} to run properly!.
+     * @see EVENTNAME,EVENT_ID,REPO_USED
      * </p>
-     * 
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
