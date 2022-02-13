@@ -71,6 +71,11 @@ public class AddEventController {
         datePicker.setValue(LocalDate.now());
     }
 
+    /**
+     * createHttpClient configure to surpass certification check
+     * @return HttpClient
+     * @author Duc Hoang
+     */
     private HttpClient createClientWithNoCertCheck (){
         TrustManager[] trustAllCerts =new TrustManager[]{
                 new X509ExtendedTrustManager()
@@ -137,6 +142,10 @@ public class AddEventController {
         return client;
     }
 
+    /**
+     * Clear the input field after user add an event
+     * @author Duc Hoang
+     */
     private void refresh(){
         eventName.setText("");
         timePicker.setText("");
@@ -146,6 +155,10 @@ public class AddEventController {
         endTimePicker.setText("");
     }
 
+    /**
+     * Color each cell in the list view based on the priority
+     * @author Duc Hoang
+     */
     private void loadColor(){
         myListView.setCellFactory(new Callback<ListView<LocalEvent>, ListCell<LocalEvent>>() {
             @Override
@@ -176,6 +189,13 @@ public class AddEventController {
         });
     }
 
+    /**
+     * when user click on add event, get all the necessary information and send it to the server, then
+     * add that event to list view
+     * @author Duc Hoang
+     * @param event
+     * @throws JsonProcessingException
+     */
     public void addEvent(ActionEvent event) throws JsonProcessingException {
             LocalEvent newEvent = new LocalEvent(eventName.getText(), datePicker.getValue(),
                     timePicker.getText(),endTimePicker.getText(),priorityPicker.getValue(),
@@ -194,6 +214,12 @@ public class AddEventController {
         refresh();
     }
 
+    /**
+     * when the user click on delete button, get the eventID, delete that event in the UI and send request
+     * to the server to delete event in the database
+     * @author Duc Hoang
+     * @param event
+     */
     public void removeEvent(ActionEvent event) {
         ObservableList<LocalEvent> selectedItems = myListView.getSelectionModel().getSelectedItems();
         int deletedEventID = 0;
@@ -205,6 +231,12 @@ public class AddEventController {
         myListView.getItems().remove(selectionID);
     }
 
+    /**
+     * whenever we load the screen, send a GET request to the server to get all the events of the user,
+     * parse JSON into User class then call AddEvent to render all the events to the view
+     * @author Duc Hoang
+     * @throws JsonProcessingException
+     */
     public void loadEvent() throws JsonProcessingException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://164.90.181.13:8080/event"))
@@ -295,7 +327,7 @@ public class AddEventController {
         String finalEndTime = endTime;
         var values = new HashMap<String, Object>() {{
             put("name", event.getName());
-            put("organizer", "duc");
+            put("organizer", event.getName());
             put("start from", finalStartTime);
             put("end at",finalEndTime);
             put("priority", event.getPriority());
@@ -322,6 +354,11 @@ public class AddEventController {
         }
     }
 
+    /**
+     * when user click on export button, create new file with fileChooser and then get all the events and
+     * write them to the file just created with saveSystem function
+     * @param event
+     */
     public void exportEvent(ActionEvent event){
         File file = fileChooser.showSaveDialog(new Stage());
         String joined = myListView.getItems().stream()
@@ -331,6 +368,12 @@ public class AddEventController {
             saveSystem(file, joined);
         }
     }
+
+    /**
+     * Write content to txt file
+     * @param file
+     * @param content
+     */
     public void saveSystem(File file, String content){
         try {
             PrintWriter printWriter = new PrintWriter(file);

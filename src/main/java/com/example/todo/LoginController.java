@@ -35,6 +35,10 @@ public class LoginController {
     @FXML
     private TextField loginUserName;
 
+    /**
+     * set event listener for login button and signUp button
+     * @author Duc Hoang
+     */
     @FXML
     void initialize(){
         //take user to sign up screen
@@ -71,7 +75,6 @@ public class LoginController {
                 e.printStackTrace();
             }
             // skip certificate check
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://164.90.181.13:8080/login"))
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
@@ -109,6 +112,11 @@ public class LoginController {
         });
     }
 
+    /**
+     * after receiving data from the user input, send HTTP request to the server, if status code is
+     * 200, show the admin page
+     * @author Duc Hoang
+     */
     private void showAdminPage(){
         loginBtnLogin.getScene().getWindow().hide();
         FXMLLoader loader = new FXMLLoader();
@@ -125,6 +133,11 @@ public class LoginController {
         stage.showAndWait();
     }
 
+    /**
+     * after receiving data from the user input, send HTTP request to the server, if status code is
+     * 200, show the admin page
+     * @author Duc Hoang
+     */
     private void showAddEventScreen(){
         loginBtnLogin.getScene().getWindow().hide();
         FXMLLoader loader = new FXMLLoader();

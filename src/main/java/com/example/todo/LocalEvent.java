@@ -14,6 +14,11 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+
+/**
+ * This is the class for create/delete a new Event
+ * @author Duc Hoang
+ */
 @JsonIgnoreProperties(value = {"remind before"})
 public class LocalEvent {
     public String name;

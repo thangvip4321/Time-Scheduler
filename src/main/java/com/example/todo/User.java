@@ -13,6 +13,10 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This is the class used for admin page
+ * @author Duc Hoang
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     public String username;

@@ -43,10 +43,12 @@ public class SignUpController {
             }
         });
     }
-    private void createUser() throws Exception {
-//        //testing without send request
-//        showSuccessfulMessage(" ");
 
+    /**
+     * when user clicks on sign up button, create a user and send information to the server for validation
+     *@author Duc Hoang
+     */
+    private void createUser() throws Exception {
         String email = signUpEmail.getText();
         String userName = signUpUserName.getText();
         String password = signUpPassword.getText();
@@ -148,6 +150,10 @@ public class SignUpController {
         return client;
     }
 
+    /**
+     * If the sign up process is complete, then redirect the user to the login screen
+     * @author Duc Hoang
+     */
     private void showLoginScreen(){
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("login.fxml"));
