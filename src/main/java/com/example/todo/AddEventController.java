@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -320,14 +321,14 @@ public class AddEventController {
     private HttpResponse<String> sendAddHttpRequest(LocalEvent event, String remindTime) throws JsonProcessingException {
         //send http POST request
         String startTime = event.getDate().toString() + "T" + event.getTime()+":00";
-        startTime = LocalDateTime.parse(startTime).toInstant(ZoneOffset.UTC).toString();
+        startTime = LocalDateTime.parse(startTime).atZone(ZoneId.systemDefault()).toInstant().toString();
         String finalStartTime = startTime;
         String endTime = event.getDate().toString() + "T" + event.getEndTime()+":00";
-        endTime = LocalDateTime.parse(endTime).toInstant(ZoneOffset.UTC).toString();
+        endTime = LocalDateTime.parse(endTime).atZone(ZoneId.systemDefault()).toInstant().toString();
         String finalEndTime = endTime;
         var values = new HashMap<String, Object>() {{
             put("name", event.getName());
-            put("organizer", event.getName());
+            put("organizer", Main.username);
             put("start from", finalStartTime);
             put("end at",finalEndTime);
             put("priority", event.getPriority());
